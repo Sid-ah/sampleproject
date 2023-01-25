@@ -24,7 +24,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --upgrade build setuptools twine
           python -m build
-      - run: TwineAuthenticate@0
+      - run: TwineAuthenticate@1
         name: Configure twine authentication
 
       # Upload everything in the dist folder to the private Artifacts feed 
