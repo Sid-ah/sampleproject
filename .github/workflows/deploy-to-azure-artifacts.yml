@@ -12,7 +12,6 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    python-version: "3.7"
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python 3.7
@@ -25,11 +24,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --upgrade build setuptools twine
           python -m build
-      - task: TwineAuthenticate@0
-        displayName: Configure twine authentication
-        inputs:
-          artifactFeeds: "sidah-py"
+      - run: TwineAuthenticate@0
+        name: Configure twine authentication
 
       # Upload everything in the dist folder to the private Artifacts feed 
-      - bash: twine upload -r $(artifactFeed) --config-file $(PYPIRC_PATH) dist/*
-        displayName: Publish artifacts
+      - run: twine upload -r "sidah-py" --config-file $(PYPIRC_PATH) dist/*
+        name: Publish artifacts
