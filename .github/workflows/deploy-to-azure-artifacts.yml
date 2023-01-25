@@ -1,0 +1,35 @@
+name: Push a python package to Azure Artifacts
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AZURE_ARTIFACTS_FEED_URL: https://dev.azure.com/simerzou/py-demo/_artifacts/feed/sidah-py    
+  BUILD_CONFIGURATION: 'Release'    # set this to the appropriate build configuration
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    python-version: "3.7"
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.7
+          creds: ${{ secrets.AZURE_DEVOPS_TOKEN }} 
+      - name: Install dependencies & build
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade build setuptools twine
+          python -m build
+      - task: TwineAuthenticate@0
+        displayName: Configure twine authentication
+        inputs:
+          artifactFeeds: "sidah-py"
+
+      # Upload everything in the dist folder to the private Artifacts feed 
+      - bash: twine upload -r $(artifactFeed) --config-file $(PYPIRC_PATH) dist/*
+        displayName: Publish artifacts
