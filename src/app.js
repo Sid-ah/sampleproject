@@ -103,26 +103,6 @@ $('#share-button').addEventListener('click', async () => {
 });
 $('#feedback-link').href += `&body=${encodeURIComponent(`My feedback on the Dahmani website concept:\n${location.href.split('#')[0]}\n\nWhat I like:\n\nWhat I would change:\n`)}`;
 
-async function loadOriginalAssets() {
-  const response = await fetch('assets/manifest.json');
-  if (response.status === 404) return;
-  if (!response.ok) throw new Error(`Image manifest returned ${response.status}`);
-  const images = await response.json();
-  const photos = images.filter((image) => !/logo|icon|favicon|mark/i.test(`${image.url} ${image.alt}`) && !image.path.endsWith('.svg'));
-  if (!photos.length) return;
-  const hero = photos[0];
-  $('#hero-image').src = hero.path;
-  $('#hero-image').alt = hero.alt || 'Photography from the original Dahmani Automotive website';
-  $('#photo-caption').textContent = 'ORIGINAL DAHMANI AUTOMOTIVE PHOTOGRAPHY';
-  for (const vehicle of vehicles) {
-    const tokens = `${vehicle.year} ${vehicle.name}`.toLowerCase().split(' ');
-    const image = photos.find((photo) => tokens.every((token) => `${photo.alt} ${photo.url}`.toLowerCase().includes(token)));
-    if (image) { vehicle.image = image.path; vehicle.imageAlt = image.alt || `Original dealership photograph associated with ${vehicle.name}`; }
-  }
-  renderVehicles();
-}
-loadOriginalAssets().catch((error) => { console.error('Original photography could not be loaded.', error); $('#photo-caption').textContent = 'DESIGN ILLUSTRATION · ORIGINAL PHOTOGRAPHY UNAVAILABLE'; });
-
 let showroom = null;
 let animation = null;
 function stopShowroom() {

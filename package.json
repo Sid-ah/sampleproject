@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "esbuild src/app.js --bundle --minify --outfile=app.js",
+    "build": "esbuild src/app.js --bundle --minify --outfile=app.js && node scripts/build-preview.mjs",
     "test": "node tests/preview.mjs",
     "start": "python3 -m http.server 4173"
   },
@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.56.0",
-    "esbuild": "^0.25.0"
+    "esbuild": "^0.25.0",
+    "sharp": "^0.34.0"
   }
 }

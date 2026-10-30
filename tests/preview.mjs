@@ -4,7 +4,7 @@ import { mkdir } from 'node:fs/promises';
 import { chromium } from '@playwright/test';
 
 const external = process.env.PREVIEW_URL;
-const url = external || 'http://127.0.0.1:4173';
+const url = external || 'http://127.0.0.1:4173/preview.html';
 const server = external ? null : spawn('python3', ['-m', 'http.server', '4173', '--bind', '127.0.0.1'], { stdio: 'ignore' });
 let browser;
 try {
@@ -31,7 +31,7 @@ try {
   assert.match(await page.title(), /Dahmani/);
   const brokenImages = await page.locator('img').evaluateAll((images) => images.filter((image) => !image.complete || image.naturalWidth === 0).map((image) => image.src));
   assert.deepEqual(brokenImages, [], 'All original dealership photos load');
-  assert.equal(await page.locator('#hero-image').getAttribute('src'), 'assets/original-01.jpg');
+  assert.match(await page.locator('#hero-image').getAttribute('src'), /assets\/original-01.jpg|data:image\/webp/);
   await page.screenshot({ path: 'test-results/desktop.png', fullPage: true });
   await page.getByRole('button', { name: 'SUVs', exact: true }).click();
   assert.equal(await page.locator('.vehicle-card').count(), 1);
