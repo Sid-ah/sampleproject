@@ -1,0 +1,62 @@
+[
+  {
+    "url": "https://dahmaniautomotive.com/logo.png",
+    "alt": "Dahmani Automotive",
+    "path": "assets/original-00.png"
+  },
+  {
+    "url": "https://dahmaniautomotive.com/showroom.jpg",
+    "alt": "Dahmani Automotive showroom",
+    "path": "assets/original-01.jpg"
+  },
+  {
+    "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/2767ba52-1a9f-4b73-b3f8-0e4e9bac1963.jpg",
+    "alt": "2012 Hyundai Elantra",
+    "path": "assets/original-02.jpg"
+  },
+  {
+    "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/1c180814-90d9-49e4-a682-82663d2e6acd.jpg",
+    "alt": "2012 Toyota Prius",
+    "path": "assets/original-03.jpg"
+  },
+  {
+    "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/1d8e732e-ffe9-4568-9903-7f09e381097e.jpg",
+    "alt": "2016 Chevrolet Malibu",
+    "path": "assets/original-04.jpg"
+  },
+  {
+    "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/e894a648-927d-4f99-be71-d9ec44ea7d39.jpg",
+    "alt": "2016 Ford Fiesta",
+    "path": "assets/original-05.jpg"
+  },
+  {
+    "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/309065c6-a483-4302-8437-d1f2bbab8e09.jpg",
+    "alt": "2013 Toyota Prius",
+    "path": "assets/original-06.jpg"
+  },
+  {
+    "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/42f76738-bb24-4225-843a-b2652ad07f56.jpg",
+    "alt": "2010 Toyota Camry",
+    "path": "assets/original-07.jpg"
+  },
+  {
+    "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/e176786b-2947-457a-9717-22cdd74913af.jpg",
+    "alt": "2013 Ford Focus",
+    "path": "assets/original-08.jpg"
+  },
+  {
+    "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/93d9e39e-f4a0-423d-a80a-af1ee0bd049b.jpg",
+    "alt": "2013 Hyundai Elantra",
+    "path": "assets/original-09.jpg"
+  },
+  {
+    "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/30e62930-6cb1-4d00-9134-c7736259ca6f.jpg",
+    "alt": "2013 Subaru Impreza",
+    "path": "assets/original-10.jpg"
+  },
+  {
+    "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/657c3e87-7fb5-46ad-a284-be0a6c44a932.jpg",
+    "alt": "2013 Toyota Highlander",
+    "path": "assets/original-11.jpg"
+  }
+]
