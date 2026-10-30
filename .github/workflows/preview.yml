@@ -23,5 +23,19 @@ jobs:
           fi
       - name: Verify public preview
         run: |
-          curl --retry 4 --retry-delay 10 --fail -L "https://raw.githack.com/Sid-ah/sampleproject/dahmani-preview/index.html" -o /tmp/preview.html
+          URL="https://raw.githack.com/Sid-ah/sampleproject/$(git rev-parse HEAD)/index.html"
+          curl --retry 4 --retry-delay 10 --fail -L "$URL" -o /tmp/preview.html
           grep -q "Dahmani" /tmp/preview.html
+          echo "PREVIEW_URL=$URL"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Browser-test published preview
+        run: PREVIEW_URL="https://raw.githack.com/Sid-ah/sampleproject/$(git rev-parse HEAD)/index.html" npm test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: preview-screenshots
+          path: test-results/

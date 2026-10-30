@@ -1,0 +1,99 @@
+import assert from 'node:assert/strict';
+import { spawn } from 'node:child_process';
+import { mkdir } from 'node:fs/promises';
+import { chromium } from '@playwright/test';
+
+const external = process.env.PREVIEW_URL;
+const url = external || 'http://127.0.0.1:4173';
+const server = external ? null : spawn('python3', ['-m', 'http.server', '4173', '--bind', '127.0.0.1'], { stdio: 'ignore' });
+let browser;
+try {
+  if (server) {
+    let ready = false;
+    for (let attempt = 0; attempt < 50; attempt++) {
+      try { if ((await fetch(url)).ok) { ready = true; break; } } catch {}
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    assert.ok(ready, 'Local preview server started');
+  }
+  await mkdir('test-results', { recursive: true });
+  browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+  const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  const page = await context.newPage();
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  const response = await page.goto(url, { waitUntil: 'networkidle', timeout: 90000 });
+  assert.equal(response.status(), 200, 'Preview returns HTTP 200');
+  await page.waitForFunction(() => document.querySelectorAll('.vehicle-card').length === 6);
+  assert.match(await page.title(), /Dahmani/);
+  const brokenImages = await page.locator('img').evaluateAll((images) => images.filter((image) => !image.complete || image.naturalWidth === 0).map((image) => image.src));
+  assert.deepEqual(brokenImages, [], 'All original dealership photos load');
+  assert.equal(await page.locator('#hero-image').getAttribute('src'), 'assets/original-01.jpg');
+  await page.screenshot({ path: 'test-results/desktop.png', fullPage: true });
+  await page.getByRole('button', { name: 'SUVs', exact: true }).click();
+  assert.equal(await page.locator('.vehicle-card').count(), 1);
+  assert.match(await page.locator('.vehicle-card h3').textContent(), /Highlander/);
+  await page.getByRole('button', { name: 'Hybrids', exact: true }).click();
+  assert.equal(await page.locator('.vehicle-card').count(), 1);
+  await page.locator('[data-filter=all]').click();
+  await page.locator('#sort').selectOption('price-low');
+  assert.match(await page.locator('.vehicle-card h3').first().textContent(), /Elantra/);
+  await page.locator('#sort').selectOption('price-high');
+  assert.match(await page.locator('.vehicle-card h3').first().textContent(), /Highlander/);
+  const favorite = page.locator('[data-save=highlander]');
+  await favorite.click();
+  assert.equal(await favorite.getAttribute('aria-pressed'), 'true');
+  await page.reload({ waitUntil: 'networkidle' });
+  assert.equal(await page.locator('[data-save=highlander]').getAttribute('aria-pressed'), 'true');
+  await page.locator('[data-detail=elantra]').first().click();
+  assert.ok(await page.locator('#vehicle-dialog').isVisible());
+  assert.match(await page.locator('#vehicle-detail').textContent(), /2012 Hyundai Elantra/);
+  assert.match(await page.locator('#vehicle-detail').textContent(), /\$3,900/);
+  await page.keyboard.press('Escape');
+  assert.ok(!(await page.locator('#vehicle-dialog').isVisible()));
+  await page.locator('#apr').fill('0');
+  assert.match(await page.locator('#monthly-payment').textContent(), /\$156/);
+  await page.locator('#down').fill('9500');
+  await page.locator('#down').dispatchEvent('input');
+  assert.equal(await page.locator('#monthly-payment').textContent(), '$0/mo');
+  await page.locator('#price').fill('3000');
+  await page.locator('#price').dispatchEvent('input');
+  assert.equal(await page.locator('#down').inputValue(), '3000');
+  await page.locator('#apr').fill('-1');
+  assert.equal(await page.locator('#monthly-payment').textContent(), 'Enter APR');
+  await page.locator('#apr').fill('7.9');
+  await page.locator('[data-showroom]').first().click();
+  await page.waitForSelector('#showroom-canvas canvas');
+  await page.waitForTimeout(1200);
+  assert.equal(await page.locator('#showroom-error').textContent(), '');
+  await page.getByRole('button', { name: 'Side', exact: true }).click();
+  assert.equal(await page.locator('#auto-rotate').getAttribute('aria-pressed'), 'false');
+  await page.getByRole('button', { name: 'Copper paint', exact: true }).click();
+  const canvas = page.locator('#showroom-canvas canvas');
+  const bounds = await canvas.boundingBox();
+  await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+  await page.mouse.down(); await page.mouse.move(bounds.x + bounds.width / 2 + 150, bounds.y + bounds.height / 2 + 25, { steps: 12 }); await page.mouse.up();
+  await page.screenshot({ path: 'test-results/showroom.png' });
+  await page.keyboard.press('Escape');
+  await page.evaluate(() => { Object.defineProperty(navigator, 'share', { value: undefined, configurable: true }); });
+  await page.getByRole('button', { name: 'Share this preview' }).click();
+  await page.waitForFunction(() => document.querySelector('#share-status').textContent.length > 0);
+  assert.match(await page.locator('#share-status').textContent(), /copied|Copy this/);
+  assert.ok((await page.locator('#feedback-link').getAttribute('href')).includes('body='));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(url, { waitUntil: 'networkidle', timeout: 90000 });
+  await page.getByRole('button', { name: 'Open navigation' }).click();
+  assert.equal(await page.locator('.menu-button').getAttribute('aria-expanded'), 'true');
+  await page.locator('.header nav a').first().click();
+  assert.equal(await page.locator('.menu-button').getAttribute('aria-expanded'), 'false');
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'No horizontal overflow on mobile');
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.screenshot({ path: 'test-results/mobile.png', fullPage: true });
+  await page.setViewportSize({ width: 320, height: 740 });
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'No horizontal overflow at 320px');
+  assert.deepEqual(errors, [], 'No JavaScript exceptions');
+  console.log(`PASS: ${url} — desktop/mobile, original images, filters, sorting, persistence, details, payment edge cases, interactive WebGL showroom, share, and navigation.`);
+} finally {
+  await browser?.close();
+  server?.kill();
+}
