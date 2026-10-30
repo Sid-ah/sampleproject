@@ -27,6 +27,7 @@ jobs:
           curl --retry 4 --retry-delay 10 --fail -L "$URL" -o /tmp/preview.html
           grep -q "Dahmani" /tmp/preview.html
           echo "PREVIEW_URL=$URL"
+          curl --fail -I "${URL%index.html}app.js"
       - uses: actions/setup-node@v4
         with:
           node-version: 22

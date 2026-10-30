@@ -21,9 +21,12 @@ try {
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
   const page = await context.newPage();
   const errors = [];
-  page.on('pageerror', (error) => errors.push(error.message));
+  page.on('pageerror', (error) => { errors.push(error.message); console.error('Browser exception:', error.message); });
+  page.on('console', (message) => { if (message.type() === 'error') console.error('Browser console:', message.text()); });
+  page.on('requestfailed', (request) => console.error('Failed request:', request.url(), request.failure()?.errorText));
   const response = await page.goto(url, { waitUntil: 'networkidle', timeout: 90000 });
   assert.equal(response.status(), 200, 'Preview returns HTTP 200');
+  await page.screenshot({ path: 'test-results/initial.png', fullPage: true });
   await page.waitForFunction(() => document.querySelectorAll('.vehicle-card').length === 6);
   assert.match(await page.title(), /Dahmani/);
   const brokenImages = await page.locator('img').evaluateAll((images) => images.filter((image) => !image.complete || image.naturalWidth === 0).map((image) => image.src));
