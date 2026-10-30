@@ -1,0 +1,27 @@
+name: Dealership preview
+on:
+  push:
+    branches: [dahmani-preview]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover original dealership assets
+        run: python3 scripts/recover_assets.py
+      - name: Save recovered assets
+        run: |
+          git config user.name "Copilot"
+          git config user.email "223556219+Copilot@users.noreply.github.com"
+          git add assets
+          if ! git diff --cached --quiet; then
+            git commit -m "Preserve dealership imagery for concept preview"
+            git push
+          fi
+      - name: Verify public preview
+        run: |
+          curl --retry 4 --retry-delay 10 --fail -L "https://raw.githack.com/Sid-ah/sampleproject/dahmani-preview/index.html" -o /tmp/preview.html
+          grep -q "Dahmani" /tmp/preview.html
