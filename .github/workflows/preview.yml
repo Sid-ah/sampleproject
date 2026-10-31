@@ -33,6 +33,8 @@ jobs:
           node-version: 22
       - run: npm ci --no-audit --no-fund
       - run: npx playwright install --with-deps chromium
+      - name: Check publicly visible customer review text
+        run: node scripts/check-public-review-text.mjs
       - name: Recover vehicle photo galleries
         run: node scripts/recover-galleries.mjs
       - name: Save original gallery imagery
