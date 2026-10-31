@@ -46,7 +46,14 @@ try {
   assert.equal(await page.locator('.header').evaluate((header) => getComputedStyle(header).backgroundColor), 'rgb(9, 11, 14)');
   assert.equal(await page.locator('#review-banner').count(), 0, 'No floating reviews overlay');
   assert.equal(await page.locator('#reviews').count(), 1, 'Dedicated reviews section');
-  assert.equal(await page.locator('.rating-summary a').getAttribute('href'), 'https://maps.app.goo.gl/HoTCheVWootQvqJZ7');
+  const businessMapLink = new URL(await page.locator('.rating-summary a').getAttribute('href'));
+  assert.equal(businessMapLink.hostname, 'www.google.com');
+  assert.equal(businessMapLink.searchParams.get('cid'), '1306977105441264595');
+  assert.equal(await page.locator('a[href*="maps.app.goo.gl"]').count(), 0, 'No unsupported Maps short links');
+  const directions = new URL(await page.getByRole('link', { name: 'Get directions' }).getAttribute('href'));
+  assert.equal(directions.pathname, '/maps/dir/');
+  assert.equal(directions.searchParams.get('api'), '1');
+  assert.equal(directions.searchParams.get('destination'), 'Dahmani Automotive LLC, 3275 Stevens Creek Blvd #135, Santa Clara, CA 95050');
   assert.match(await page.locator('.rating-summary').textContent(), /5.0/);
   assert.match(await page.locator('.rating-summary').textContent(), /Verified October 31, 2026/);
   const reviewSource = JSON.parse(await readFile('assets/reviews-source.json', 'utf8'));
@@ -199,7 +206,7 @@ try {
   const dealerSchema = JSON.parse(await staticPage.locator('script[type="application/ld+json"]').textContent());
   assert.equal(dealerSchema['@type'], 'AutoDealer');
   assert.equal(dealerSchema.address.addressLocality, 'Santa Clara');
-  assert.equal(dealerSchema.hasMap, 'https://maps.app.goo.gl/HoTCheVWootQvqJZ7');
+  assert.equal(dealerSchema.hasMap, 'https://www.google.com/maps?cid=1306977105441264595');
   assert.equal(dealerSchema.aggregateRating, undefined, 'No unsupported self-serving review markup');
   assert.ok(await staticPage.locator('#brand-splash').isHidden(), 'JavaScript-disabled visitors are not blocked by splash');
   assert.ok(await staticPage.locator('#sell-form button[type=submit]').isDisabled(), 'JavaScript-disabled form cannot send contact information to preview host');

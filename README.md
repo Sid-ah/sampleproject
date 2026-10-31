@@ -48,6 +48,8 @@ Customer quotations are not yet available: Google's public view did not expose r
 
 ## Seller requests and cash-only transactions
 
+Public Google links use the verified direct business URL (`https://www.google.com/maps?cid=1306977105441264595`) and the Google Maps directions API URL, rather than `maps.app.goo.gl` app redirects. Original short links remain only in provenance records.
+
 “Submit a sale request online” opens the original dealership's `/sell` form, whose page and POST form were verified without submitting test leads. The preview's local form offers an alternative: it validates the vehicle and contact details and prepares a `mailto:` request to `sales@dahmaniautomotive.com`. The visitor must open their email app and press Send; a clipboard alternative and phone contact are available. It never shows a delivered-success message, sends data to third-party lead services, or stores seller information in browser storage. Production inline submissions would require an authorized backend.
 
 ## SEO and production launch

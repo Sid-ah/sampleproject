@@ -8,7 +8,7 @@ const css = `${await readFile('style.css', 'utf8')}\n${await readFile('theme.css
 await sharp('assets/original-00.png').trim({ background: '#000000', threshold: 18 }).webp({ quality: 90 }).toFile('assets/original-logo.webp');
 html = html.replace('<!-- INVENTORY -->', () => vehicleCards(vehicles));
 const reviewSource = JSON.parse(await readFile('assets/reviews-source.json', 'utf8'));
-const googleLink = escape(reviewSource.sourceUrl);
+const googleLink = escape(reviewSource.resolvedListing);
 const reviewCards = reviewSource.reviewExcerpts.map((review) => {
   if (!review.quote || !review.author || !review.sourceUrl || new URL(review.sourceUrl).protocol !== 'https:') throw new Error('Review cards require genuine quoted text, attribution, and an HTTPS source link.');
   return `<article class="customer-review-card"><span class="google-letter" aria-hidden="true">G</span><blockquote>${escape(review.quote)}</blockquote><p class="review-author">${escape(review.author)}</p><a class="text-button" href="${escape(review.sourceUrl)}" target="_blank" rel="noopener noreferrer">Original Google review ↗</a></article>`;
