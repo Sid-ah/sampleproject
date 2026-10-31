@@ -1,0 +1,14 @@
+{
+  "business": "Dahmani Automotive LLC",
+  "sourceUrl": "https://maps.app.goo.gl/HoTCheVWootQvqJZ7",
+  "resolvedListing": "https://www.google.com/maps?cid=1306977105441264595&hl=en",
+  "googleFeatureId": "0x808fcbfcacc3442b:0x122350c0b36513d3",
+  "rating": 5,
+  "ratingScale": 5,
+  "verifiedDate": "2026-10-31",
+  "mode": "static snapshot",
+  "reviewCount": null,
+  "reviewExcerpts": [],
+  "verificationRun": "https://github.com/Sid-ah/sampleproject/actions/runs/41152262012",
+  "note": "The public Google Maps browser view showed the matching business name, address, phone, and 5.0 rating. It did not expose a review count or review text. No count or quotations are claimed."
+}

@@ -10,8 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect supplied Google review listing
-        run: python3 scripts/inspect-reviews.py
       - name: Recover original dealership assets
         run: python3 scripts/recover_assets.py
       - name: Save recovered assets
@@ -35,8 +33,6 @@ jobs:
           node-version: 22
       - run: npm ci --no-audit --no-fund
       - run: npx playwright install --with-deps chromium
-      - name: Verify publicly accessible review details
-        run: node scripts/inspect-reviews.mjs
       - name: Browser-test published preview
         run: PREVIEW_URL="https://htmlpreview.github.io/?https://raw.githubusercontent.com/Sid-ah/sampleproject/$(git rev-parse HEAD)/preview.html" npm test
       - uses: actions/upload-artifact@v4

@@ -40,7 +40,7 @@ The original logo is now used in the header, footer, and animated welcome. The b
 
 The splash appears once per tab session, warms up essential image decoding, and leaves after at most about 2.7 seconds. Reduced-motion visitors skip it. The page remains available if JavaScript or session storage is disabled.
 
-The floating reviews panel links to the exact Google Maps listing supplied by the owner: https://maps.app.goo.gl/HoTCheVWootQvqJZ7. Its redirect was verified against Dahmani Automotive LLC at the same address. No rating, count, or testimonial is displayed unless it can be independently verified. A live review feed needs an authorized Google Places integration with attribution, restricted server-side credentials, and compliance with Google's current storage/display terms.
+The floating reviews panel links to the exact Google Maps listing supplied by the owner: https://maps.app.goo.gl/HoTCheVWootQvqJZ7. Its redirect was verified against Dahmani Automotive LLC at the same address. The public browser view showed a **5.0 rating**, verified October 31, 2026. `assets/reviews-source.json` records its provenance. This is a clearly dated snapshot, not a live feed; Google did not expose a review count or review text, so neither is invented. A live review feed needs an authorized Google Places integration with attribution, restricted server-side credentials, and compliance with Google's current storage/display terms.
 
 ## SEO and production launch
 

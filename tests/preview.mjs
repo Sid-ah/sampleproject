@@ -48,6 +48,12 @@ try {
   assert.equal(await page.locator('#reviews-toggle').getAttribute('aria-expanded'), 'true');
   assert.ok(await page.locator('#reviews-panel').isVisible());
   assert.equal(await page.locator('#reviews-panel a').getAttribute('href'), 'https://maps.app.goo.gl/HoTCheVWootQvqJZ7');
+  assert.equal(await page.locator('.reviews-score strong').textContent(), '5.0');
+  assert.match(await page.locator('.reviews-source').textContent(), /Not a live feed/);
+  const reviewSource = JSON.parse(await readFile('assets/reviews-source.json', 'utf8'));
+  assert.equal(new URL(reviewSource.resolvedListing).searchParams.get('cid'), BigInt(reviewSource.googleFeatureId.split(':')[1]).toString());
+  assert.equal(reviewSource.rating, 5);
+  assert.equal(reviewSource.reviewCount, null);
   assert.equal(await page.locator('#close-reviews').evaluate((button) => button === document.activeElement), true);
   await page.waitForTimeout(300);
   await page.screenshot({ path: 'test-results/reviews.png' });
@@ -115,6 +121,11 @@ try {
   assert.equal(await page.locator('.menu-button').getAttribute('aria-expanded'), 'true');
   await page.locator('.header nav a').first().click();
   assert.equal(await page.locator('.menu-button').getAttribute('aria-expanded'), 'false');
+  for (const image of await page.locator('.vehicle-image img').all()) {
+    await image.scrollIntoViewIfNeeded();
+    await image.evaluate((element) => element.decode());
+    assert.ok(await image.evaluate((element) => element.naturalWidth > 0), 'Vehicle photos load while scrolling on mobile');
+  }
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'No horizontal overflow on mobile');
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: 'test-results/mobile.png', fullPage: true });
