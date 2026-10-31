@@ -16,15 +16,15 @@ Open http://localhost:4173. Run `npm test` for desktop/mobile browser checks. Se
 
 ## Review hosting
 
-The preview is served through raw.githack.com from this public branch. A commit-pinned URL keeps all assets on the same version:
+The self-contained preview is rendered by the GitHub HTML Preview viewer from this public branch. A commit-pinned URL keeps all assets on the same version:
 
-`https://raw.githack.com/Sid-ah/sampleproject/COMMIT_SHA/preview.html`
+`https://htmlpreview.github.io/?https://raw.githubusercontent.com/Sid-ah/sampleproject/COMMIT_SHA/preview.html`
 
 `npm run build` generates `preview.html` with embedded scripts, styles, and optimized WebP imagery, so review hosting does not depend on separate asset requests. The editable source remains in `index.html`, `style.css`, and `src/app.js`.
 
 This is third-party review hosting, not production dealership hosting. No backend, lead storage, credit application, or analytics is configured. Contact buttons open phone/email apps; feedback opens an email draft.
 
-The host may display a safety confirmation first; choose **Open the page** to view the concept. No login or payment information is needed.
+No login or payment information is needed. The previous raw.githack.com host was replaced after a reported access failure. Creating a dedicated Pages site is blocked by the session's GitHub permissions; no existing repository homepage has been modified.
 
 ## Source and limitations
 
