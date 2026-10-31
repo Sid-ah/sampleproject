@@ -24,6 +24,8 @@ The preview is served through raw.githack.com from this public branch. A commit-
 
 This is third-party review hosting, not production dealership hosting. No backend, lead storage, credit application, or analytics is configured. Contact buttons open phone/email apps; feedback opens an email draft.
 
+The host may display a safety confirmation first; choose **Open the page** to view the concept. No login or payment information is needed.
+
 ## Source and limitations
 
 `assets/manifest.json` records original image URLs and descriptions recovered from https://dahmaniautomotive.com/ on October 30, 2026. Selected inventory prices, years, and odometer readings are a snapshot of that page, not live stock. Confirm all details directly with the business. Showroom imagery was already present on the original site; it is not proof of actual dealership premises or vehicle condition.

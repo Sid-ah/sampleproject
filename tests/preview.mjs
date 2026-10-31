@@ -26,6 +26,11 @@ try {
   page.on('requestfailed', (request) => console.error('Failed request:', request.url(), request.failure()?.errorText));
   const response = await page.goto(url, { waitUntil: 'networkidle', timeout: 90000 });
   assert.equal(response.status(), 200, 'Preview returns HTTP 200');
+  const hostingConfirmation = page.getByText('Open the page', { exact: true });
+  if (await hostingConfirmation.isVisible()) {
+    await hostingConfirmation.click();
+    await page.waitForLoadState('networkidle');
+  }
   await page.screenshot({ path: 'test-results/initial.png', fullPage: true });
   await page.waitForFunction(() => document.querySelectorAll('.vehicle-card').length === 6);
   assert.match(await page.title(), /Dahmani/);
