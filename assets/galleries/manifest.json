@@ -1,0 +1,273 @@
+{
+  "elantra": {
+    "source": "https://dahmaniautomotive.com/cars/cmt67awh8000301s6sgvpj3tf",
+    "verifiedDate": "2026-10-31",
+    "images": [
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/2767ba52-1a9f-4b73-b3f8-0e4e9bac1963.jpg",
+        "alt": "2012 Hyundai Elantra",
+        "path": "assets/galleries/elantra-00.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/bd0c5c4b-f387-40ab-b5ef-4466eded1783.jpg",
+        "alt": "",
+        "path": "assets/galleries/elantra-01.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/cd93b246-6728-40b0-b7e6-3f52618d9dc4.jpg",
+        "alt": "",
+        "path": "assets/galleries/elantra-02.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/9115de0e-2a54-4903-a59b-583841bb8f43.jpg",
+        "alt": "",
+        "path": "assets/galleries/elantra-03.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/d703ee52-147a-4a82-b50d-21e8a1852838.jpg",
+        "alt": "",
+        "path": "assets/galleries/elantra-04.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/f96795ec-91c1-4aca-8ce0-50d1b5581f5f.jpg",
+        "alt": "",
+        "path": "assets/galleries/elantra-05.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/4fcb0afa-2648-4d87-ac4f-cf8aa68706cd.jpg",
+        "alt": "",
+        "path": "assets/galleries/elantra-06.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/b67f1cc2-5145-472c-a2cb-a72525adbb58.jpg",
+        "alt": "",
+        "path": "assets/galleries/elantra-07.jpg"
+      }
+    ]
+  },
+  "prius": {
+    "source": "https://dahmaniautomotive.com/cars/cmt66qpg8000201s6x0p0luew",
+    "verifiedDate": "2026-10-31",
+    "images": [
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/1c180814-90d9-49e4-a682-82663d2e6acd.jpg",
+        "alt": "2012 Toyota Prius",
+        "path": "assets/galleries/prius-00.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/5b3809ec-e0d8-4604-a9ed-bc0942470cac.jpg",
+        "alt": "",
+        "path": "assets/galleries/prius-01.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/652e86b0-225e-40d2-8b9d-b11481fc866c.jpg",
+        "alt": "",
+        "path": "assets/galleries/prius-02.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/bcb73df0-4f0d-4ba6-9733-ce028b74be30.jpg",
+        "alt": "",
+        "path": "assets/galleries/prius-03.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/a2f64349-7306-41ac-aabe-fab957a5dfda.jpg",
+        "alt": "",
+        "path": "assets/galleries/prius-04.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/229c2e52-5ffd-41b3-8809-98955deefa27.jpg",
+        "alt": "",
+        "path": "assets/galleries/prius-05.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/126ad92d-4d7f-483b-b5b6-864e389eb0a4.jpg",
+        "alt": "",
+        "path": "assets/galleries/prius-06.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/6f8ef1b4-c1e0-455e-bde1-935ee4e88d10.jpg",
+        "alt": "",
+        "path": "assets/galleries/prius-07.jpg"
+      }
+    ]
+  },
+  "highlander": {
+    "source": "https://dahmaniautomotive.com/cars/cmuixxqr5000001s6s3hr71tc",
+    "verifiedDate": "2026-10-31",
+    "images": [
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/657c3e87-7fb5-46ad-a284-be0a6c44a932.jpg",
+        "alt": "2013 Toyota Highlander",
+        "path": "assets/galleries/highlander-00.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/5c306fe6-af13-4f4e-b945-0237e7d1ad4e.jpg",
+        "alt": "",
+        "path": "assets/galleries/highlander-01.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/83b63696-6667-4d8b-aab9-9fd8146d07f4.jpg",
+        "alt": "",
+        "path": "assets/galleries/highlander-02.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/d4a9f7f6-565d-417e-8a36-80f85cd8cee0.jpg",
+        "alt": "",
+        "path": "assets/galleries/highlander-03.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/65b0b2d4-ba95-4383-9294-21ddda7b80bb.jpg",
+        "alt": "",
+        "path": "assets/galleries/highlander-04.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/d7dabfd7-9fb3-4451-88a2-4f7be0d4aa34.jpg",
+        "alt": "",
+        "path": "assets/galleries/highlander-05.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/2cc942d2-49d3-440f-9a9b-f8605212050a.jpg",
+        "alt": "",
+        "path": "assets/galleries/highlander-06.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/6d8f8600-73ce-435d-adf4-8e622e71d5b5.jpg",
+        "alt": "",
+        "path": "assets/galleries/highlander-07.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/33d77124-1971-4e24-8a9b-3a908128bb4d.jpg",
+        "alt": "",
+        "path": "assets/galleries/highlander-08.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/5bc2508b-aa3a-4295-b63a-22298c6acb44.jpg",
+        "alt": "",
+        "path": "assets/galleries/highlander-09.jpg"
+      }
+    ]
+  },
+  "camry": {
+    "source": "https://dahmaniautomotive.com/cars/cmuiysv6h000401s6nnudubwp",
+    "verifiedDate": "2026-10-31",
+    "images": [
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/42f76738-bb24-4225-843a-b2652ad07f56.jpg",
+        "alt": "2010 Toyota Camry",
+        "path": "assets/galleries/camry-00.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/1f36cdde-aa09-4ef4-ab18-4731c51648bd.jpg",
+        "alt": "",
+        "path": "assets/galleries/camry-01.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/6fcaba69-2e47-4b41-8604-6e0d84c21a37.jpg",
+        "alt": "",
+        "path": "assets/galleries/camry-02.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/36442f23-23fe-452c-90c7-c64547708ce6.jpg",
+        "alt": "",
+        "path": "assets/galleries/camry-03.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/2a4b1831-301b-4c32-a1c5-ca98efe86d07.jpg",
+        "alt": "",
+        "path": "assets/galleries/camry-04.jpg"
+      }
+    ]
+  },
+  "impreza": {
+    "source": "https://dahmaniautomotive.com/cars/cmuiy32p7000101s6mldesoxi",
+    "verifiedDate": "2026-10-31",
+    "images": [
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/30e62930-6cb1-4d00-9134-c7736259ca6f.jpg",
+        "alt": "2013 Subaru Impreza",
+        "path": "assets/galleries/impreza-00.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/e838a17b-a1da-4e30-bab3-36e7a111df3f.jpg",
+        "alt": "",
+        "path": "assets/galleries/impreza-01.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/5406f8db-0a54-4e61-84e5-d75987537343.jpg",
+        "alt": "",
+        "path": "assets/galleries/impreza-02.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/3d0c4eff-ad24-47db-a59a-0432cd8e79bc.jpg",
+        "alt": "",
+        "path": "assets/galleries/impreza-03.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/384a410d-b624-43e2-b213-35d15a3a2250.jpg",
+        "alt": "",
+        "path": "assets/galleries/impreza-04.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/f3b187a6-b7c4-44ca-a9ba-81fbc1f83bbd.jpg",
+        "alt": "",
+        "path": "assets/galleries/impreza-05.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/cdc34e89-9cb8-4813-bbf8-6216e531385c.jpg",
+        "alt": "",
+        "path": "assets/galleries/impreza-06.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/13d4f95f-4359-43cb-b5dd-ac069a1be11b.jpg",
+        "alt": "",
+        "path": "assets/galleries/impreza-07.jpg"
+      }
+    ]
+  },
+  "malibu": {
+    "source": "https://dahmaniautomotive.com/cars/cmt66g7sz000101s6zp6tw67t",
+    "verifiedDate": "2026-10-31",
+    "images": [
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/1d8e732e-ffe9-4568-9903-7f09e381097e.jpg",
+        "alt": "2016 Chevrolet Malibu",
+        "path": "assets/galleries/malibu-00.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/3a160ba3-9d60-4fd0-9429-3cd4d8e9667f.jpg",
+        "alt": "",
+        "path": "assets/galleries/malibu-01.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/ac9435a3-8f8f-4aa7-bf1c-3a552182fecf.jpg",
+        "alt": "",
+        "path": "assets/galleries/malibu-02.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/2fe4b5db-23c8-42bf-adb0-ee8a6b26426a.jpg",
+        "alt": "",
+        "path": "assets/galleries/malibu-03.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/e3070370-f2b1-4902-a3ab-555827765fb7.jpg",
+        "alt": "",
+        "path": "assets/galleries/malibu-04.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/e490e3f4-1dcb-450d-8cb4-602acbf46a1f.jpg",
+        "alt": "",
+        "path": "assets/galleries/malibu-05.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/b4b4260f-01ec-4d9b-991e-94e7a0539b7d.jpg",
+        "alt": "",
+        "path": "assets/galleries/malibu-06.jpg"
+      },
+      {
+        "url": "https://storage.googleapis.com/angelic-cat-506000-k5-car-photos/cars/fc62160e-8724-4951-b663-3e8e13ef5d8a.jpg",
+        "alt": "",
+        "path": "assets/galleries/malibu-07.jpg"
+      }
+    ]
+  }
+}
