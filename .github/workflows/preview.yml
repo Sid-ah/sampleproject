@@ -33,6 +33,15 @@ jobs:
           node-version: 22
       - run: npm ci --no-audit --no-fund
       - run: npx playwright install --with-deps chromium
+      - name: Recover vehicle photo galleries
+        run: node scripts/recover-galleries.mjs
+      - name: Save original gallery imagery
+        run: |
+          git add assets/galleries
+          if ! git diff --cached --quiet; then
+            git commit -m "Preserve original vehicle photo galleries"
+            git push
+          fi
       - name: Browser-test published preview
         run: PREVIEW_URL="https://htmlpreview.github.io/?https://raw.githubusercontent.com/Sid-ah/sampleproject/$(git rev-parse HEAD)/preview.html" npm test
       - uses: actions/upload-artifact@v4
