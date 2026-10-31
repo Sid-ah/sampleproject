@@ -33,6 +33,8 @@ jobs:
           node-version: 22
       - run: npm ci --no-audit --no-fund
       - run: npx playwright install --with-deps chromium
+      - name: Inspect new customer review link
+        run: node scripts/check-review-link.mjs
       - name: Browser-test published preview
         run: PREVIEW_URL="https://htmlpreview.github.io/?https://raw.githubusercontent.com/Sid-ah/sampleproject/$(git rev-parse HEAD)/preview.html" npm test
       - uses: actions/upload-artifact@v4
