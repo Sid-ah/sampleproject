@@ -9,6 +9,8 @@
   "mode": "static snapshot",
   "reviewCount": null,
   "reviewExcerpts": [],
+  "additionalSourceChecked": "https://maps.app.goo.gl/QqQdj9EkkHDancpk8?g_st=ic",
+  "additionalVerificationRun": "https://github.com/Sid-ah/sampleproject/actions/runs/41173739887",
   "verificationRun": "https://github.com/Sid-ah/sampleproject/actions/runs/41152262012",
   "note": "The public Google Maps browser view showed the matching business name, address, phone, and 5.0 rating. It did not expose a review count or review text. No count or quotations are claimed."
 }
