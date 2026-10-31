@@ -1,6 +1,6 @@
 # Dahmani Automotive review concept
 
-A responsive static redesign concept with recovered dealership imagery, an inventory snapshot, saved vehicles, payment estimator, contact links, sharing, and an interactive Three.js car showroom.
+A responsive cash-only dealership concept with recovered imagery, complete vehicle galleries, saved vehicles, a photo-based 360-style explorer, seller request links, sharing, and a separate Three.js concept model. No financing section or payment calculator is included.
 
 The original dealership website and existing repository default branch are not changed. This project lives only on the `dahmani-preview` branch.
 
@@ -30,7 +30,9 @@ No login or payment information is needed. The previous raw.githack.com host was
 
 `assets/manifest.json` records original image URLs and descriptions recovered from https://dahmaniautomotive.com/ on October 30, 2026. Selected inventory prices, years, and odometer readings are a snapshot of that page, not live stock. Confirm all details directly with the business. Showroom imagery was already present on the original site; it is not proof of actual dealership premises or vehicle condition.
 
-The 360-degree experience is an original, interactive 3D concept model with orbit, zoom, viewpoints, and paint selection. It is **not** a photographic vehicle spin, live camera, or interior panorama. Real exterior spins require ordered multi-angle photography; interior tours need equirectangular 360-degree captures. Existing single-view photos cannot truthfully reconstruct unseen surfaces.
+`assets/galleries/manifest.json` records every image recovered from the six original vehicle detail pages on October 31, 2026: Elantra 8, Prius 8, Highlander 10, Camry 5, Impreza 8, and Malibu 8 (47 photos total). Galleries preserve the original order, offer thumbnails/arrows/keyboard/swipe navigation, and show the full image without cropping. To refresh imagery in an environment with access to the source site, run `node scripts/recover-galleries.mjs` and rebuild; this is not done on every deploy.
+
+The primary 360-style experience now uses those original photographs. Dragging changes photos and adds a modest perspective effect; **it is a simulation, not a continuous 360-degree camera scan**. Interiors and close-ups remain in their original gallery sequence. It cannot reconstruct unseen surfaces. A separate clearly identified 3D concept model remains available.
 
 The original logo is preserved in `assets/original-00.png` and reused in the interface. Colors, illustration, and copy are proposed design directions.
 
@@ -40,7 +42,13 @@ The original logo is now used in the header, footer, and animated welcome. The b
 
 The splash appears once per tab session, warms up essential image decoding, and leaves after at most about 2.7 seconds. Reduced-motion visitors skip it. The page remains available if JavaScript or session storage is disabled.
 
-The floating reviews panel links to the exact Google Maps listing supplied by the owner: https://maps.app.goo.gl/HoTCheVWootQvqJZ7. Its redirect was verified against Dahmani Automotive LLC at the same address. The public browser view showed a **5.0 rating**, verified October 31, 2026. `assets/reviews-source.json` records its provenance. This is a clearly dated snapshot, not a live feed; Google did not expose a review count or review text, so neither is invented. A live review feed needs an authorized Google Places integration with attribution, restricted server-side credentials, and compliance with Google's current storage/display terms.
+The floating review banner (not a popup) links to the exact Google Maps listing supplied by the owner: https://maps.app.goo.gl/HoTCheVWootQvqJZ7. Its redirect was verified against Dahmani Automotive LLC at the same address. The public browser view showed a **5.0 rating**, verified October 31, 2026. `assets/reviews-source.json` records its provenance. This is a clearly dated snapshot, not a live feed.
+
+Customer quotations are not yet available: Google's public view did not expose review text or counts, and its “See more” flow asked for sign-in. The banner therefore uses a neutral invitation to read reviews, not invented testimonials. To display quotes, supply approved genuine excerpts with review links/attribution, or configure an authorized Google Places integration under its current display/storage terms.
+
+## Seller requests and cash-only transactions
+
+“Submit a sale request online” opens the original dealership's `/sell` form, whose page and POST form were verified without submitting test leads. The preview's local form offers an alternative: it validates the vehicle and contact details and prepares a `mailto:` request to `sales@dahmaniautomotive.com`. The visitor must open their email app and press Send; a clipboard alternative and phone contact are available. It never shows a delivered-success message, sends data to third-party lead services, or stores seller information in browser storage. Production inline submissions would require an authorized backend.
 
 ## SEO and production launch
 

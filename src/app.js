@@ -4,6 +4,8 @@ const $ = (selector) => document.querySelector(selector);
 for (const vehicle of vehicles) {
   const image = $(`.vehicle-card[data-id="${vehicle.id}"] img`);
   if (image) vehicle.image = image.getAttribute('src');
+  vehicle.images = [...document.querySelectorAll(`#gallery-${vehicle.id} [data-gallery-photo]`)].map((image) => ({ src: image.hasAttribute('data-use-card') ? vehicle.image : image.getAttribute('src'), alt: image.getAttribute('data-alt') || image.alt }));
+  if (!vehicle.images.length) vehicle.images = [{ src: vehicle.image, alt: vehicle.imageAlt }];
 }
 let THREE;
 let OrbitControls;
@@ -41,20 +43,7 @@ async function showFirstVisitSplash() {
   finish();
 }
 showFirstVisitSplash();
-function setReviewsOpen(open, restoreFocus = false) {
-  $('#reviews-panel').hidden = !open;
-  $('#reviews-toggle').setAttribute('aria-expanded', String(open));
-  if (open) $('#close-reviews').focus({ preventScroll: true });
-  else if (restoreFocus) $('#reviews-toggle').focus({ preventScroll: true });
-}
-$('#reviews-toggle').addEventListener('click', () => setReviewsOpen($('#reviews-panel').hidden));
-$('#close-reviews').addEventListener('click', () => setReviewsOpen(false, true));
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape' && !$('#reviews-panel').hidden) setReviewsOpen(false, true);
-});
-document.addEventListener('click', (event) => {
-  if (!event.target.closest('.reviews-widget') && !$('#reviews-panel').hidden) setReviewsOpen(false);
-});
+$('#close-review-banner').addEventListener('click', () => { $('#review-banner').hidden = true; });
 document.querySelectorAll('[data-filter]').forEach((button) => button.addEventListener('click', () => {
   filter = button.dataset.filter;
   document.querySelectorAll('[data-filter]').forEach((tab) => tab.classList.toggle('active', tab === button));
@@ -74,6 +63,7 @@ $('#vehicle-grid').addEventListener('click', (event) => {
   if (details) showVehicle(details.dataset.detail);
 });
 function openDialog(dialog) {
+  document.querySelectorAll('dialog[open]').forEach((open) => open.close());
   dialog.showModal();
   document.body.classList.add('modal-open');
 }
@@ -85,11 +75,105 @@ document.querySelectorAll('dialog').forEach((dialog) => {
   });
   dialog.addEventListener('click', (event) => { if (event.target === dialog) { const rect = dialog.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dialog.close(); } });
 });
+let detailVehicle;
+let detailIndex = 0;
+function galleryThumbnails(vehicle, index, attribute) {
+  return vehicle.images.map((image, position) => `<button ${attribute}="${position}" aria-label="View photo ${position + 1} of ${vehicle.name}" aria-pressed="${position === index}"><img src="${escape(image.src)}" alt="${escape(image.alt)}" width="82" height="59" loading="lazy"></button>`).join('');
+}
 function showVehicle(id) {
   const vehicle = vehicles.find((entry) => entry.id === id);
-  $('#vehicle-detail').innerHTML = `<img class="detail-image" src="${escape(vehicle.image)}" alt="${escape(vehicle.imageAlt)}"><div class="detail-copy"><p class="eyebrow muted">YOUR NEXT CHAPTER?</p><h2>${vehicle.year} ${vehicle.name}</h2><p>Listed price ${money(vehicle.price)} · Confirm current availability with the dealership.</p><div class="detail-specs"><span>MILEAGE<strong>${vehicle.miles} mi</strong></span><span>CATEGORY<strong>${vehicle.type === 'suv' ? 'SUV' : vehicle.type === 'hybrid' ? 'Hybrid' : 'Sedan'}</strong></span><span>FUEL TYPE<strong>${vehicle.fuel}</strong></span></div><div class="detail-actions"><a class="button button-dark" href="tel:+14086037148">Ask about this model ↗</a><a class="button" href="mailto:sales@dahmaniautomotive.com?subject=${encodeURIComponent(`Enquiry: ${vehicle.year} ${vehicle.name} (website concept)`)}">Arrange a visit ↗</a></div><p class="detail-notice">Listing and image recovered from dahmaniautomotive.com on October 30, 2026. This is a static design preview, not live inventory. Availability, condition, final price, taxes, and fees must be confirmed with the dealership.</p></div>`;
+  detailVehicle = vehicle;
+  detailIndex = 0;
+  $('#vehicle-detail').innerHTML = `<div class="detail-gallery" tabindex="0" role="group" aria-label="Vehicle photo gallery. Use left and right arrow keys."><img class="detail-image" src="${escape(vehicle.images[0].src)}" alt="${escape(vehicle.images[0].alt)}"><button class="photo-arrow photo-prev" data-detail-step="-1" aria-label="Previous vehicle photo">‹</button><button class="photo-arrow photo-next" data-detail-step="1" aria-label="Next vehicle photo">›</button><span class="gallery-position" aria-live="polite">1 / ${vehicle.images.length}</span></div><div class="gallery-thumbnails" aria-label="All vehicle photographs">${galleryThumbnails(vehicle, 0, 'data-detail-photo')}</div><p id="detail-image-error" class="photo-error" role="alert"></p><div class="detail-copy"><p class="eyebrow muted">YOUR NEXT CHAPTER?</p><h2>${vehicle.year} ${vehicle.name}</h2><p>Listed cash price ${money(vehicle.price)} · Confirm current availability with the dealership.</p><div class="detail-specs"><span>MILEAGE<strong>${vehicle.miles} mi</strong></span><span>CATEGORY<strong>${vehicle.type === 'suv' ? 'SUV' : vehicle.type === 'hybrid' ? 'Hybrid' : 'Sedan'}</strong></span><span>FUEL TYPE<strong>${vehicle.fuel}</strong></span></div><div class="detail-actions"><a class="button button-dark" href="tel:+14086037148">Ask about this model ↗</a><a class="button" href="mailto:sales@dahmaniautomotive.com?subject=${encodeURIComponent(`Enquiry: ${vehicle.year} ${vehicle.name} (website concept)`)}">Arrange a visit ↗</a><button class="button" data-photo-car="${vehicle.id}">Explore photo simulation ↗</button></div><p class="detail-notice">Original dealership listing snapshot. Complete gallery recovered October 31, 2026. This is a static preview, not live inventory. Availability, condition, final cash price, taxes, and fees must be confirmed with the dealership.</p></div>`;
+  $('.detail-image').addEventListener('error', () => { $('#detail-image-error').textContent = 'This photograph could not be displayed. Select another view or contact the dealership.'; });
+  attachPhotoDrag($('.detail-gallery'), () => $('.detail-image'), (direction) => setDetailPhoto(detailIndex + direction));
   openDialog($('#vehicle-dialog'));
 }
+function setDetailPhoto(index) {
+  detailIndex = (index + detailVehicle.images.length) % detailVehicle.images.length;
+  const photo = detailVehicle.images[detailIndex];
+  $('.detail-image').src = photo.src;
+  $('.detail-image').alt = photo.alt;
+  $('#detail-image-error').textContent = '';
+  $('.gallery-position').textContent = `${detailIndex + 1} / ${detailVehicle.images.length}`;
+  document.querySelectorAll('[data-detail-photo]').forEach((button) => button.setAttribute('aria-pressed', String(Number(button.dataset.detailPhoto) === detailIndex)));
+}
+$('#vehicle-detail').addEventListener('click', (event) => {
+  const thumbnail = event.target.closest('[data-detail-photo]');
+  const step = event.target.closest('[data-detail-step]');
+  const simulate = event.target.closest('[data-photo-car]');
+  if (thumbnail) setDetailPhoto(Number(thumbnail.dataset.detailPhoto));
+  if (step) setDetailPhoto(detailIndex + Number(step.dataset.detailStep));
+  if (simulate) openPhotoExperience(simulate.dataset.photoCar);
+});
+$('#vehicle-dialog').addEventListener('keydown', (event) => {
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); setDetailPhoto(detailIndex + (event.key === 'ArrowRight' ? 1 : -1)); }
+});
+let photoVehicle = vehicles[0];
+let photoIndex = 0;
+let simulated = true;
+function setPhoto(index) {
+  photoIndex = (index + photoVehicle.images.length) % photoVehicle.images.length;
+  const photo = photoVehicle.images[photoIndex];
+  $('#photo-main').src = photo.src;
+  $('#photo-main').alt = photo.alt;
+  $('#photo-main').style.transform = '';
+  $('#photo-position').textContent = `Photo ${photoIndex + 1} of ${photoVehicle.images.length} · ${photoVehicle.year} ${photoVehicle.name}`;
+  document.querySelectorAll('[data-explorer-photo]').forEach((button) => button.setAttribute('aria-pressed', String(Number(button.dataset.explorerPhoto) === photoIndex)));
+}
+function loadPhotoVehicle(id) {
+  photoVehicle = vehicles.find((vehicle) => vehicle.id === id);
+  $('#photo-title').textContent = `${photoVehicle.year} ${photoVehicle.name}`;
+  $('#photo-vehicle').value = id;
+  $('#photo-thumbnails').innerHTML = galleryThumbnails(photoVehicle, 0, 'data-explorer-photo');
+  setPhoto(0);
+}
+function openPhotoExperience(id = vehicles[0].id) {
+  loadPhotoVehicle(id);
+  openDialog($('#photo-dialog'));
+}
+document.querySelectorAll('[data-photo-experience]').forEach((button) => button.addEventListener('click', () => openPhotoExperience()));
+$('#photo-vehicle').addEventListener('change', (event) => loadPhotoVehicle(event.target.value));
+$('#photo-thumbnails').addEventListener('click', (event) => {
+  const button = event.target.closest('[data-explorer-photo]');
+  if (button) setPhoto(Number(button.dataset.explorerPhoto));
+});
+$('#photo-stage .photo-prev').addEventListener('click', () => setPhoto(photoIndex - 1));
+$('#photo-stage .photo-next').addEventListener('click', () => setPhoto(photoIndex + 1));
+$('#photo-stage').addEventListener('keydown', (event) => {
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); setPhoto(photoIndex + (event.key === 'ArrowRight' ? 1 : -1)); }
+});
+function setPhotoMode(simulate) {
+  simulated = simulate;
+  $('#photo-stage').classList.toggle('simulated', simulate);
+  $('#photo-main').style.transform = '';
+  $('#photo-flat').setAttribute('aria-pressed', String(!simulate));
+  $('#photo-simulation').setAttribute('aria-pressed', String(simulate));
+  $('.photo-mode-label').textContent = simulate ? 'PHOTO SIMULATION · NOT A CAMERA SCAN' : 'ORIGINAL PHOTO GALLERY';
+}
+$('#photo-flat').addEventListener('click', () => setPhotoMode(false));
+$('#photo-simulation').addEventListener('click', () => setPhotoMode(true));
+function attachPhotoDrag(stage, image, step) {
+  let movement = null;
+  stage.addEventListener('pointerdown', (event) => {
+    if (event.target.closest('button') || event.button !== 0) return;
+    movement = { x: event.clientX, y: event.clientY };
+    stage.setPointerCapture(event.pointerId);
+  });
+  stage.addEventListener('pointermove', (event) => {
+    if (!movement) return;
+    const distance = event.clientX - movement.x;
+    if (stage.id === 'photo-stage' && simulated && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      image().style.transform = `rotateY(${Math.max(-12, Math.min(12, distance / 4))}deg) rotateX(${Math.max(-4, Math.min(4, (movement.y - event.clientY) / 10))}deg) scale(1.015)`;
+    }
+    if (Math.abs(distance) >= 65) { step(distance < 0 ? 1 : -1); movement.x = event.clientX; }
+  });
+  const end = () => { movement = null; image().style.transform = ''; };
+  stage.addEventListener('pointerup', end);
+  stage.addEventListener('pointercancel', end);
+}
+attachPhotoDrag($('#photo-stage'), () => $('#photo-main'), (direction) => setPhoto(photoIndex + direction));
+$('#photo-main').addEventListener('error', () => { $('#photo-position').textContent = 'This photo could not load. Choose another thumbnail or contact the dealership.'; });
 $('.menu-button').addEventListener('click', () => {
   const open = $('.header nav').classList.toggle('open');
   $('.menu-button').setAttribute('aria-expanded', String(open));
@@ -98,26 +182,28 @@ document.querySelectorAll('.header nav a').forEach((link) => link.addEventListen
   $('.header nav').classList.remove('open');
   $('.menu-button').setAttribute('aria-expanded', 'false');
 }));
-function updatePayment() {
-  const price = Number($('#price').value);
-  $('#down').max = price;
-  const down = Math.min(Number($('#down').value), price);
-  $('#down').value = down;
-  const aprField = $('#apr');
-  if (!aprField.checkValidity() || aprField.value === '') {
-    $('#monthly-payment').textContent = 'Enter APR';
-    return;
-  }
-  const principal = price - down;
-  const rate = Number(aprField.value) / 1200;
-  const months = Number($('#term').value);
-  const payment = rate === 0 ? principal / months : principal * rate / (1 - (1 + rate) ** -months);
-  $('#price-output').textContent = money(price);
-  $('#down-output').textContent = money(down);
-  $('#monthly-payment').innerHTML = `${money(payment)}<small>/mo</small>`;
-}
-['price', 'down', 'term', 'apr'].forEach((id) => $(`#${id}`).addEventListener('input', updatePayment));
-updatePayment();
+let saleRequest = '';
+$('#sell-inputs').disabled = false;
+$('#sell-form').addEventListener('input', (event) => {
+  if (event.target instanceof HTMLInputElement) event.target.setCustomValidity('');
+});
+$('#sell-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  form.querySelectorAll('input[required]:not([type=checkbox])').forEach((input) => input.setCustomValidity(input.value.trim() ? '' : 'Please enter a value.'));
+  if (!form.reportValidity()) return;
+  const data = new FormData(form);
+  const value = (name) => String(data.get(name) || '').trim();
+  saleRequest = `Hello Dahmani Automotive,\n\nI would like to sell my vehicle.\n\nName: ${value('name')}\nEmail: ${value('email')}\nPhone: ${value('phone') || 'Not provided'}\nVehicle: ${value('year')} ${value('make')} ${value('model')}\nOdometer: ${value('mileage')} miles\nAsking price: ${value('askingPrice') ? `$${value('askingPrice')}` : 'Please discuss with me'}\n\nCondition and notes:\n${value('notes') || 'Not provided'}\n\nI agree to be contacted about this vehicle.`;
+  $('#sell-email-link').href = `mailto:sales@dahmaniautomotive.com?subject=${encodeURIComponent(`Sell my car: ${value('year')} ${value('make')} ${value('model')}`)}&body=${encodeURIComponent(saleRequest)}`;
+  $('#sell-email-link').hidden = false;
+  $('#copy-sale-request').hidden = false;
+  $('#sell-status').textContent = 'Your request is ready, but has not been sent. Open your email app below, review the details, and press Send. You can also copy the request and email it to sales@dahmaniautomotive.com.';
+});
+$('#copy-sale-request').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(saleRequest); $('#sell-status').textContent = 'Request copied. Paste it into an email to sales@dahmaniautomotive.com and press Send to submit.'; }
+  catch (error) { console.warn('Sale request could not be copied.', error); $('#sell-status').textContent = 'Clipboard access is unavailable. Use the email link, or call (408) 603-7148 to discuss selling your car.'; }
+});
 $('#share-button').addEventListener('click', async () => {
   const url = location.href.split('#')[0];
   try {
