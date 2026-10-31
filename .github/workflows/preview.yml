@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Inspect supplied Google review listing
+        run: python3 scripts/inspect-reviews.py
       - name: Recover original dealership assets
         run: python3 scripts/recover_assets.py
       - name: Save recovered assets
