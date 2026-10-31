@@ -43,7 +43,17 @@ async function showFirstVisitSplash() {
   finish();
 }
 showFirstVisitSplash();
-$('#close-review-banner').addEventListener('click', () => { $('#review-banner').hidden = true; });
+const reviewsTrack = $('#reviews-track');
+function scrollReviews(direction) {
+  const card = reviewsTrack.querySelector('article');
+  reviewsTrack.scrollBy({ left: direction * (card.getBoundingClientRect().width + 20), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+}
+$('#reviews-previous').addEventListener('click', () => scrollReviews(-1));
+$('#reviews-next').addEventListener('click', () => scrollReviews(1));
+reviewsTrack.addEventListener('keydown', (event) => {
+  if (event.target !== reviewsTrack) return;
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); scrollReviews(event.key === 'ArrowRight' ? 1 : -1); }
+});
 document.querySelectorAll('[data-filter]').forEach((button) => button.addEventListener('click', () => {
   filter = button.dataset.filter;
   document.querySelectorAll('[data-filter]').forEach((tab) => tab.classList.toggle('active', tab === button));

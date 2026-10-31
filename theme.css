@@ -107,6 +107,31 @@ body { max-width: none; margin: 0; width: 100%; }
   .sell-form input:not([type=checkbox]), .sell-form textarea { font-size: 16px; padding: 10px; }
 }
 ::selection { background: #d92e3a; color: #fff; }
+.customer-reviews { background: #ebecef; overflow: hidden; }
+.customer-reviews .section-heading { align-items: flex-end; }
+.reviews-scroll-controls { display: flex; justify-content: space-between; align-items: center; margin: 24px 0 18px; }
+.reviews-scroll-controls p { font-size: 11px; color: var(--muted); margin: 0; }
+.reviews-scroll-controls>div { display: flex; gap: 9px; }
+.reviews-scroll-controls button { width: 42px; height: 42px; border: 1px solid #ccd0d6; background: transparent; border-radius: 50%; }
+.reviews-scroll-controls button:hover { background: var(--ink); color: #fff; }
+.reviews-track { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin; scrollbar-color: #a7adb6 transparent; padding: 4px 3px 20px; }
+.customer-review-card { flex: 0 0 min(380px, 82vw); scroll-snap-align: start; background: #fff; border: 1px solid #dce0e5; border-radius: 12px; padding: 30px; min-height: 330px; display: flex; flex-direction: column; align-items: flex-start; }
+.customer-review-card .eyebrow { margin: 22px 0 15px; font-size: 8px; }
+.customer-review-card h3 { font-size: 29px; font-family: var(--serif); font-weight: 400; line-height: 1.2; margin-bottom: 20px; }
+.customer-review-card>p:not(.eyebrow) { font-size: 12px; line-height: 1.9; color: var(--muted); }
+.customer-review-card .text-button,.customer-review-card .button { margin-top: auto; font-size: 11px; }
+.section-review-score { font-size: 55px; font-weight: 500; letter-spacing: -2px; margin-bottom: 10px; }
+.section-review-score small { font-size: 17px; font-weight: 400; letter-spacing: 0; color: var(--muted); }
+.rating-summary .review-stars { margin-bottom: 18px; }
+.customer-review-card blockquote { font-family: var(--serif); font-size: 23px; line-height: 1.5; margin: 25px 0; }
+.customer-review-card .review-author { color: var(--ink)!important; font-weight: 600; }
+.reviews-disclosure { font-size: 10px; line-height: 1.8; color: var(--muted); margin: 15px 0 0; }
+footer { padding-bottom: 35px; }
+@media(max-width:760px) {
+  .customer-reviews .section-heading { align-items: flex-start; }
+  .customer-review-card { padding: 25px; min-height: 320px; }
+  .reviews-track { gap: 16px; }
+}
 .preview-bar { background: #050608; color: #d3d5da; }
 .preview-dot, .live-dot { background: #c8cbd1; }
 .header { background: #090b0e; color: #f5f5f2; border-bottom: 1px solid #ffffff12; }

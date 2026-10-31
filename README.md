@@ -42,9 +42,9 @@ The original logo is now used in the header, footer, and animated welcome. The b
 
 The splash appears once per tab session, warms up essential image decoding, and leaves after at most about 2.7 seconds. Reduced-motion visitors skip it. The page remains available if JavaScript or session storage is disabled.
 
-The floating review banner (not a popup) links to the exact Google Maps listing supplied by the owner: https://maps.app.goo.gl/HoTCheVWootQvqJZ7. Its redirect was verified against Dahmani Automotive LLC at the same address. The public browser view showed a **5.0 rating**, verified October 31, 2026. `assets/reviews-source.json` records its provenance. This is a clearly dated snapshot, not a live feed.
+The dedicated customer reviews section replaces the floating banner. Its horizontally scrolling cards support native touch scrolling, keyboard arrows, and previous/next buttons without automatic motion. It links to the exact Google Maps listing supplied by the owner: https://maps.app.goo.gl/HoTCheVWootQvqJZ7. Its redirect was verified against Dahmani Automotive LLC at the same address. The public browser view showed a **5.0 rating**, verified October 31, 2026. `assets/reviews-source.json` records its provenance. This is a clearly dated snapshot, not a live feed.
 
-Customer quotations are not yet available: Google's public view did not expose review text or counts, and its “See more” flow asked for sign-in. The banner therefore uses a neutral invitation to read reviews, not invented testimonials. To display quotes, supply approved genuine excerpts with review links/attribution, or configure an authorized Google Places integration under its current display/storage terms.
+Customer quotations are not yet available: Google's public view did not expose review text or counts, and its “See more” flow asked for sign-in. The section explicitly identifies the pending text rather than showing invented testimonials. To display quotes, add approved genuine excerpts to `reviewExcerpts` in `assets/reviews-source.json`, each with `quote`, `author`, and `sourceUrl`, then rebuild. The build requires all three fields and renders attributed quote cards linked to their source. Alternatively configure an authorized Google Places integration under its current display/storage terms.
 
 ## Seller requests and cash-only transactions
 
