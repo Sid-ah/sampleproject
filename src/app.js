@@ -1,34 +1,60 @@
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { vehicles, vehicleCards, money, escape } from './inventory.js';
 
 const $ = (selector) => document.querySelector(selector);
-const money = (value) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
-const vehicles = [
-  { id: 'elantra', name: 'Hyundai Elantra', year: 2012, type: 'sedan', price: 3900, miles: '110,250', tag: 'THE EVERYDAY UPGRADE', fuel: 'Gasoline', image: 'assets/original-02.jpg' },
-  { id: 'prius', name: 'Toyota Prius', year: 2012, type: 'hybrid', price: 7900, miles: '121,453', tag: 'GO A LITTLE FURTHER', fuel: 'Hybrid', image: 'assets/original-03.jpg' },
-  { id: 'highlander', name: 'Toyota Highlander', year: 2013, type: 'suv', price: 11800, miles: '147,250', tag: 'ROOM FOR WHAT’S NEXT', fuel: 'Gasoline', image: 'assets/original-11.jpg' },
-  { id: 'camry', name: 'Toyota Camry', year: 2010, type: 'sedan', price: 4995, miles: '174,250', tag: 'A CLASSIC FOR A REASON', fuel: 'Gasoline', image: 'assets/original-07.jpg' },
-  { id: 'impreza', name: 'Subaru Impreza', year: 2013, type: 'sedan', price: 8495, miles: '79,250', tag: 'TAKE THE SCENIC ROUTE', fuel: 'Gasoline', image: 'assets/original-10.jpg' },
-  { id: 'malibu', name: 'Chevrolet Malibu', year: 2016, type: 'sedan', price: 4900, miles: '154,080', tag: 'MAKE YOURSELF AT HOME', fuel: 'Gasoline', image: 'assets/original-04.jpg' },
-];
-vehicles.forEach((vehicle) => { vehicle.imageAlt = `${vehicle.year} ${vehicle.name} — image from the original dealership website`; });
+for (const vehicle of vehicles) {
+  const image = $(`.vehicle-card[data-id="${vehicle.id}"] img`);
+  if (image) vehicle.image = image.getAttribute('src');
+}
+let THREE;
+let OrbitControls;
 let filter = 'all';
 let saved;
 try { saved = new Set(JSON.parse(localStorage.getItem('dahmani-saved') || '[]')); }
 catch (error) { saved = new Set(); console.warn('Saved vehicles could not be restored.', error); }
-const escape = (text) => String(text).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 
 function renderVehicles() {
   const list = vehicles.filter((vehicle) => filter === 'all' || vehicle.type === filter);
   if ($('#sort').value === 'price-low') list.sort((a, b) => a.price - b.price);
   if ($('#sort').value === 'price-high') list.sort((a, b) => b.price - a.price);
-  $('#vehicle-grid').innerHTML = list.map((vehicle) => `<article class="vehicle-card" data-id="${vehicle.id}">
-    <button class="save-car" aria-label="Save ${vehicle.name}" aria-pressed="${saved.has(vehicle.id)}" data-save="${vehicle.id}">${saved.has(vehicle.id) ? '♥' : '♡'}</button>
-    <button class="vehicle-image" data-detail="${vehicle.id}" aria-label="View ${vehicle.name} details"><img src="${escape(vehicle.image)}" alt="${escape(vehicle.imageAlt || 'Original illustration — not a photo of this vehicle')}" loading="lazy"><span class="vehicle-tag">${vehicle.tag}</span></button>
-    <div class="vehicle-title-row"><h3>${vehicle.name}</h3><span>${money(vehicle.price)}</span></div><p class="vehicle-meta">${vehicle.year} &nbsp;·&nbsp; ${vehicle.miles} mi &nbsp;·&nbsp; ${vehicle.fuel}</p>
-    <div class="vehicle-card-bottom"><span>Website snapshot</span><button data-detail="${vehicle.id}">Take a closer look &nbsp;↗</button></div></article>`).join('');
+  $('#vehicle-grid').innerHTML = vehicleCards(list, saved);
 }
 renderVehicles();
+async function showFirstVisitSplash() {
+  const splash = $('#brand-splash');
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  try { if (sessionStorage.getItem('dahmani-welcome')) return; }
+  catch (error) { console.warn('First-visit splash preference could not be read.', error); }
+  splash.hidden = false;
+  const finish = () => {
+    splash.classList.add('splash-leaving');
+    setTimeout(() => { splash.hidden = true; }, 450);
+    try { sessionStorage.setItem('dahmani-welcome', '1'); }
+    catch (error) { console.warn('First-visit splash preference could not be saved.', error); }
+  };
+  const start = performance.now();
+  const essentialImages = [$('#hero-image'), $('.splash-logo'), ...document.querySelectorAll('.vehicle-image img')].slice(0, 5);
+  const ready = Promise.allSettled(essentialImages.map((image) => image.decode())).then((results) => {
+    results.forEach((result) => { if (result.status === 'rejected') console.warn('An initial dealership image could not be decoded.', result.reason); });
+  });
+  await Promise.race([ready, new Promise((resolve) => setTimeout(resolve, 2200))]);
+  await new Promise((resolve) => setTimeout(resolve, Math.max(0, 1100 - (performance.now() - start))));
+  finish();
+}
+showFirstVisitSplash();
+function setReviewsOpen(open, restoreFocus = false) {
+  $('#reviews-panel').hidden = !open;
+  $('#reviews-toggle').setAttribute('aria-expanded', String(open));
+  if (open) $('#close-reviews').focus({ preventScroll: true });
+  else if (restoreFocus) $('#reviews-toggle').focus({ preventScroll: true });
+}
+$('#reviews-toggle').addEventListener('click', () => setReviewsOpen($('#reviews-panel').hidden));
+$('#close-reviews').addEventListener('click', () => setReviewsOpen(false, true));
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && !$('#reviews-panel').hidden) setReviewsOpen(false, true);
+});
+document.addEventListener('click', (event) => {
+  if (!event.target.closest('.reviews-widget') && !$('#reviews-panel').hidden) setReviewsOpen(false);
+});
 document.querySelectorAll('[data-filter]').forEach((button) => button.addEventListener('click', () => {
   filter = button.dataset.filter;
   document.querySelectorAll('[data-filter]').forEach((tab) => tab.classList.toggle('active', tab === button));
@@ -110,7 +136,7 @@ function stopShowroom() {
 }
 function makeCar() {
   const group = new THREE.Group();
-  const paint = new THREE.MeshPhysicalMaterial({ color: '#416759', metalness: .65, roughness: .25, clearcoat: 1 });
+  const paint = new THREE.MeshPhysicalMaterial({ color: '#56606e', metalness: .65, roughness: .25, clearcoat: 1 });
   const glass = new THREE.MeshPhysicalMaterial({ color: '#193039', metalness: .55, roughness: .12, clearcoat: 1 });
   const tire = new THREE.MeshStandardMaterial({ color: '#171c19', roughness: .85 });
   const chrome = new THREE.MeshStandardMaterial({ color: '#c4c9c4', metalness: .9, roughness: .22 });
@@ -168,9 +194,9 @@ function createShowroom() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(container.clientWidth, container.clientHeight);
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  renderer.setClearColor('#e8e9df'); renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.3;
+  renderer.setClearColor('#e8eaed'); renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.3;
   container.append(renderer.domElement);
-  const scene = new THREE.Scene(); scene.fog = new THREE.Fog('#e8e9df', 15, 30);
+  const scene = new THREE.Scene(); scene.fog = new THREE.Fog('#e8eaed', 15, 30);
   const camera = new THREE.PerspectiveCamera(36, container.clientWidth / container.clientHeight, .1, 100);
   camera.position.set(-6.5, 3.8, 6.7);
   const controls = new OrbitControls(camera, renderer.domElement);
@@ -181,9 +207,9 @@ function createShowroom() {
   const key = new THREE.DirectionalLight('#fff9e6', 4); key.position.set(-4, 8, 5); key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048); key.shadow.camera.left = -6; key.shadow.camera.right = 6; key.shadow.camera.top = 6; key.shadow.camera.bottom = -6; key.shadow.normalBias = .025; scene.add(key);
   const rim = new THREE.DirectionalLight('#cbdedb', 2); rim.position.set(4, 4, -5); scene.add(rim);
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: '#e8e9df', roughness: .85 }));
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: '#e8eaed', roughness: .85 }));
   floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
-  const platform = new THREE.Mesh(new THREE.CylinderGeometry(3.4, 3.4, .04, 100), new THREE.MeshStandardMaterial({ color: '#d8decd', roughness: .7 }));
+  const platform = new THREE.Mesh(new THREE.CylinderGeometry(3.4, 3.4, .04, 100), new THREE.MeshStandardMaterial({ color: '#d8dde5', roughness: .7 }));
   platform.position.y = -.025; platform.receiveShadow = true; scene.add(platform);
   const car = makeCar(); scene.add(car.group);
   const resize = new ResizeObserver(() => {
@@ -198,10 +224,19 @@ function animateShowroom() {
   showroom.controls.update(); showroom.renderer.render(showroom.scene, showroom.camera);
   animation = requestAnimationFrame(animateShowroom);
 }
-document.querySelectorAll('[data-showroom]').forEach((button) => button.addEventListener('click', () => {
+document.querySelectorAll('[data-showroom]').forEach((button) => button.addEventListener('click', async () => {
   openDialog($('#showroom-dialog'));
-  try { if (!showroom) createShowroom(); if (animation === null) animateShowroom(); }
+  $('#showroom-canvas').setAttribute('aria-busy', 'true');
+  try {
+    if (!THREE) {
+      THREE = await import('./three-runtime.js');
+      OrbitControls = THREE.OrbitControls;
+    }
+    if (!showroom) createShowroom();
+    if ($('#showroom-dialog').open && animation === null) animateShowroom();
+  }
   catch (error) { console.error('The 3D showroom could not be started.', error); $('#showroom-error').textContent = 'The interactive showroom needs WebGL. Try a browser with hardware acceleration enabled. You can still browse all vehicle photography in the collection.'; }
+  finally { $('#showroom-canvas').setAttribute('aria-busy', 'false'); }
 }));
 document.querySelectorAll('[data-angle]').forEach((button) => button.addEventListener('click', () => {
   if (!showroom) return;

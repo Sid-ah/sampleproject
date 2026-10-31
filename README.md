@@ -32,4 +32,24 @@ No login or payment information is needed. The previous raw.githack.com host was
 
 The 360-degree experience is an original, interactive 3D concept model with orbit, zoom, viewpoints, and paint selection. It is **not** a photographic vehicle spin, live camera, or interior panorama. Real exterior spins require ordered multi-angle photography; interior tours need equirectangular 360-degree captures. Existing single-view photos cannot truthfully reconstruct unseen surfaces.
 
-The wordmark treatment, colors, illustration, and copy are proposed design directions. The original logo is preserved in `assets/original-00.png`.
+The original logo is preserved in `assets/original-00.png` and reused in the interface. Colors, illustration, and copy are proposed design directions.
+
+## Brand, loading, and reviews
+
+The original logo is now used in the header, footer, and animated welcome. The build trims the black outer margins of the recovered image into `assets/original-logo.webp` without redrawing the mark. The palette is obsidian `#111418`, pearl `#f5f5f2`, silver `#8c939e`, and red `#d92e3a`.
+
+The splash appears once per tab session, warms up essential image decoding, and leaves after at most about 2.7 seconds. Reduced-motion visitors skip it. The page remains available if JavaScript or session storage is disabled.
+
+The floating reviews panel links to the exact Google Maps listing supplied by the owner: https://maps.app.goo.gl/HoTCheVWootQvqJZ7. Its redirect was verified against Dahmani Automotive LLC at the same address. No rating, count, or testimonial is displayed unless it can be independently verified. A live review feed needs an authorized Google Places integration with attribution, restricted server-side credentials, and compliance with Google's current storage/display terms.
+
+## SEO and production launch
+
+`site.html` is the self-contained direct-hosting build. It includes static inventory markup, a local-search title and description, canonical URL, social cards, AutoDealer JSON-LD, descriptive image text, intrinsic image dimensions, and semantic business contact details. `preview.html` omits JSON-LD because the third-party viewer incorrectly executes JSON data scripts.
+
+Both builds deliberately retain `noindex, follow`: the review concept must not compete with the real dealership or index stale stock. On an authorized production launch, deploy `site.html` as `index.html` on the real domain, verify current business details and stock, remove the preview noindex directive, publish a sitemap, and register it in Search Console. Metadata in a third-party viewer does not optimize the existing live website. No self-serving review stars or unsupported inventory offers are added to structured data.
+
+## Capturing real 360-degree media
+
+For exterior spins, use a tripod-mounted phone or camera and capture 36–72 evenly spaced views around a stationary vehicle. Keep focal length, distance, height, exposure, and lighting consistent. Keep the whole car in every frame; number files in rotation order and group them by vehicle.
+
+For interiors, use a true 360-degree camera on a slim monopod or support inside the cabin. Export full-resolution stitched 2:1 equirectangular images, not reframed screenshots or standard phone panoramas. Move people out of the scene and remove personal information before capturing. Exterior sequences and interior panoramas are separate formats; neither can be reconstructed truthfully from a single standard photograph.

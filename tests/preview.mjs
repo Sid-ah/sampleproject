@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { mkdir } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { chromium } from '@playwright/test';
 
 const external = process.env.PREVIEW_URL;
@@ -31,9 +32,28 @@ try {
     await hostingConfirmation.click();
     await page.waitForLoadState('networkidle');
   }
+  await page.waitForSelector('#brand-splash', { state: 'hidden', timeout: 5000 });
+  assert.equal(await page.evaluate(() => sessionStorage.getItem('dahmani-welcome')), '1', 'First visit splash completes and records this session');
   await page.screenshot({ path: 'test-results/initial.png', fullPage: true });
   await page.waitForFunction(() => document.querySelectorAll('.vehicle-card').length === 6);
   assert.match(await page.title(), /Dahmani/);
+  assert.match(await page.locator('.header .original-brand img').getAttribute('alt'), /Dahmani Automotive/);
+  assert.match(await page.locator('meta[name=description]').getAttribute('content'), /Santa Clara/);
+  assert.equal(await page.locator('link[rel=canonical]').getAttribute('href'), 'https://dahmaniautomotive.com/');
+  assert.equal(await page.locator('meta[name=robots]').getAttribute('content'), 'noindex, follow');
+  assert.equal(await page.locator('h1').count(), 1);
+  assert.equal(await page.locator('meta[property="og:image"]').count(), 1);
+  assert.equal(await page.locator('.header').evaluate((header) => getComputedStyle(header).backgroundColor), 'rgb(9, 11, 14)');
+  await page.locator('#reviews-toggle').click();
+  assert.equal(await page.locator('#reviews-toggle').getAttribute('aria-expanded'), 'true');
+  assert.ok(await page.locator('#reviews-panel').isVisible());
+  assert.equal(await page.locator('#reviews-panel a').getAttribute('href'), 'https://maps.app.goo.gl/HoTCheVWootQvqJZ7');
+  assert.equal(await page.locator('#close-reviews').evaluate((button) => button === document.activeElement), true);
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: 'test-results/reviews.png' });
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('#reviews-toggle').getAttribute('aria-expanded'), 'false');
+  assert.equal(await page.locator('#reviews-toggle').evaluate((button) => button === document.activeElement), true);
   const brokenImages = await page.locator('img').evaluateAll((images) => images.filter((image) => !image.complete || image.naturalWidth === 0).map((image) => image.src));
   assert.deepEqual(brokenImages, [], 'All original dealership photos load');
   assert.match(await page.locator('#hero-image').getAttribute('src'), /assets\/original-01.jpg|data:image\/webp/);
@@ -52,6 +72,7 @@ try {
   await favorite.click();
   assert.equal(await favorite.getAttribute('aria-pressed'), 'true');
   await page.reload({ waitUntil: 'networkidle' });
+  assert.ok(await page.locator('#brand-splash').isHidden(), 'Return visits do not show the splash');
   assert.equal(await page.locator('[data-save=highlander]').getAttribute('aria-pressed'), 'true');
   await page.locator('[data-detail=elantra]').first().click();
   assert.ok(await page.locator('#vehicle-dialog').isVisible());
@@ -98,9 +119,30 @@ try {
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: 'test-results/mobile.png', fullPage: true });
   await page.setViewportSize({ width: 320, height: 740 });
+  await page.locator('#reviews-toggle').click();
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'No horizontal overflow at 320px');
+  const reviewBounds = await page.locator('#reviews-panel').boundingBox();
+  assert.ok(reviewBounds.x >= 0 && reviewBounds.x + reviewBounds.width <= 320, 'Review panel fits narrow mobile screens');
+  await page.locator('#close-reviews').click();
+  const reducedContext = await browser.newContext({ reducedMotion: 'reduce' });
+  const reducedPage = await reducedContext.newPage();
+  await reducedPage.goto(url, { waitUntil: 'networkidle', timeout: 90000 });
+  await reducedPage.waitForSelector('.vehicle-card');
+  assert.ok(await reducedPage.locator('#brand-splash').isHidden(), 'Reduced motion skips the animated splash');
+  await reducedContext.close();
+  const staticContext = await browser.newContext({ javaScriptEnabled: false });
+  const staticPage = await staticContext.newPage();
+  await staticPage.setContent(await readFile('site.html', 'utf8'), { waitUntil: 'domcontentloaded' });
+  assert.equal(await staticPage.locator('.vehicle-card').count(), 6, 'Inventory is present without executing JavaScript');
+  const dealerSchema = JSON.parse(await staticPage.locator('script[type="application/ld+json"]').textContent());
+  assert.equal(dealerSchema['@type'], 'AutoDealer');
+  assert.equal(dealerSchema.address.addressLocality, 'Santa Clara');
+  assert.equal(dealerSchema.hasMap, 'https://maps.app.goo.gl/HoTCheVWootQvqJZ7');
+  assert.equal(dealerSchema.aggregateRating, undefined, 'No unsupported self-serving review markup');
+  assert.ok(await staticPage.locator('#brand-splash').isHidden(), 'JavaScript-disabled visitors are not blocked by splash');
+  await staticContext.close();
   assert.deepEqual(errors, [], 'No JavaScript exceptions');
-  console.log(`PASS: ${url} — desktop/mobile, original images, filters, sorting, persistence, details, payment edge cases, interactive WebGL showroom, share, and navigation.`);
+  console.log(`PASS: ${url} — desktop/mobile, original logo, splash and reduced motion, floating Google reviews, SEO and static inventory, original images, filters, sorting, persistence, details, payment edge cases, interactive WebGL showroom, share, and navigation.`);
 } finally {
   await browser?.close();
   server?.kill();
