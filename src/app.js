@@ -245,7 +245,6 @@ function closeNavigation() {
 document.querySelectorAll('.header nav a').forEach((link) => link.addEventListener('click', closeNavigation));
 document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeNavigation(); });
 const header = $('.header');
-document.documentElement.classList.add('has-js');
 const updateHeader = () => {
   header.classList.toggle('scrolled', scrollY > 16);
   document.body.classList.toggle('past-hero', scrollY > 360);

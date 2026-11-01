@@ -230,6 +230,7 @@ try {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(url, { waitUntil: 'networkidle', timeout: 90000 });
   await calmScrolling(page);
+  await page.locator('.mobile-bar').waitFor({ state: 'hidden' });
   assert.ok(await page.locator('.mobile-bar').isHidden(), 'Mobile action bar stays out of the way on the first screen');
   assert.ok((await page.locator('.preview-bar').boundingBox()).height < 56, 'Preview notice is a single compact line on mobile');
   await page.evaluate(() => scrollTo(0, 900));
