@@ -1,4 +1,4 @@
-import { vehicles, vehicleCards, money, escape } from './inventory.js';
+import { vehicles, vehicleCards, typeLabels, money, escape } from './inventory.js';
 
 const $ = (selector) => document.querySelector(selector);
 for (const vehicle of vehicles) {
@@ -48,6 +48,10 @@ function scrollReviews(direction) {
   const card = reviewsTrack.querySelector('article');
   reviewsTrack.scrollBy({ left: direction * (card.getBoundingClientRect().width + 20), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
 }
+const reviewControls = $('.reviews-scroll-controls');
+const updateReviewControls = () => { reviewControls.hidden = reviewsTrack.scrollWidth <= reviewsTrack.clientWidth + 1; };
+updateReviewControls();
+addEventListener('resize', updateReviewControls);
 $('#reviews-previous').addEventListener('click', () => scrollReviews(-1));
 $('#reviews-next').addEventListener('click', () => scrollReviews(1));
 reviewsTrack.addEventListener('keydown', (event) => {
@@ -94,7 +98,8 @@ function showVehicle(id) {
   const vehicle = vehicles.find((entry) => entry.id === id);
   detailVehicle = vehicle;
   detailIndex = 0;
-  $('#vehicle-detail').innerHTML = `<div class="detail-gallery" tabindex="0" role="group" aria-label="Vehicle photo gallery. Use left and right arrow keys."><img class="detail-image" src="${escape(vehicle.images[0].src)}" alt="${escape(vehicle.images[0].alt)}"><button class="photo-arrow photo-prev" data-detail-step="-1" aria-label="Previous vehicle photo">‹</button><button class="photo-arrow photo-next" data-detail-step="1" aria-label="Next vehicle photo">›</button><span class="gallery-position" aria-live="polite">1 / ${vehicle.images.length}</span></div><div class="gallery-thumbnails" aria-label="All vehicle photographs">${galleryThumbnails(vehicle, 0, 'data-detail-photo')}</div><p id="detail-image-error" class="photo-error" role="alert"></p><div class="detail-copy"><p class="eyebrow muted">YOUR NEXT CHAPTER?</p><h2>${vehicle.year} ${vehicle.name}</h2><p>Listed cash price ${money(vehicle.price)} · Confirm current availability with the dealership.</p><div class="detail-specs"><span>MILEAGE<strong>${vehicle.miles} mi</strong></span><span>CATEGORY<strong>${vehicle.type === 'suv' ? 'SUV' : vehicle.type === 'hybrid' ? 'Hybrid' : 'Sedan'}</strong></span><span>FUEL TYPE<strong>${vehicle.fuel}</strong></span></div><div class="detail-actions"><a class="button button-dark" href="tel:+14086037148">Ask about this model ↗</a><a class="button" href="mailto:sales@dahmaniautomotive.com?subject=${encodeURIComponent(`Enquiry: ${vehicle.year} ${vehicle.name} (website concept)`)}">Arrange a visit ↗</a><button class="button" data-photo-car="${vehicle.id}">Explore photo simulation ↗</button></div><p class="detail-notice">Original dealership listing snapshot. Complete gallery recovered October 31, 2026. This is a static preview, not live inventory. Availability, condition, final cash price, taxes, and fees must be confirmed with the dealership.</p></div>`;
+  const icon = (name) => `<svg class="icon" aria-hidden="true"><use href="#i-${name}"/></svg>`;
+  $('#vehicle-detail').innerHTML = `<div class="detail-media"><div class="detail-gallery" tabindex="0" role="group" aria-label="Vehicle photo gallery. Use left and right arrow keys."><img class="detail-image" src="${escape(vehicle.images[0].src)}" alt="${escape(vehicle.images[0].alt)}"><button class="photo-arrow photo-prev" data-detail-step="-1" aria-label="Previous vehicle photo">${icon('left')}</button><button class="photo-arrow photo-next" data-detail-step="1" aria-label="Next vehicle photo">${icon('right')}</button><span class="gallery-position" aria-live="polite">1 / ${vehicle.images.length}</span></div><div class="gallery-thumbnails" aria-label="All vehicle photographs">${galleryThumbnails(vehicle, 0, 'data-detail-photo')}</div><p id="detail-image-error" class="photo-error" role="alert"></p></div><div class="detail-copy"><div><p class="eyebrow">${typeLabels[vehicle.type]} · ${vehicle.year}</p><h2>${vehicle.year} ${vehicle.name}</h2></div><p class="detail-price"><span>Cash price</span><strong>${money(vehicle.price)}</strong></p><div class="detail-specs"><span>Mileage<strong>${vehicle.miles} mi</strong></span><span>Category<strong>${typeLabels[vehicle.type]}</strong></span><span>Fuel<strong>${vehicle.fuel}</strong></span></div><div class="detail-actions"><a class="button button-primary button-large" href="tel:+14086037148">${icon('phone')}Ask about this car</a><a class="button button-ghost-dark" href="mailto:sales@dahmaniautomotive.com?subject=${encodeURIComponent(`Enquiry: ${vehicle.year} ${vehicle.name} (website concept)`)}">${icon('mail')}Email to arrange a visit</a><button class="button button-ghost-dark" data-photo-car="${vehicle.id}">${icon('photos')}Explore the photo viewer</button></div><p class="detail-notice">Original dealership listing snapshot. Complete gallery recovered October 31, 2026. This is a static preview, not live inventory. Availability, condition, final cash price, taxes, and fees must be confirmed with the dealership.</p></div>`;
   $('.detail-image').addEventListener('error', () => { $('#detail-image-error').textContent = 'This photograph could not be displayed. Select another view or contact the dealership.'; });
   attachPhotoDrag($('.detail-gallery'), () => $('.detail-image'), (direction) => setDetailPhoto(detailIndex + direction));
   openDialog($('#vehicle-dialog'));
@@ -138,11 +143,51 @@ function loadPhotoVehicle(id) {
   $('#photo-thumbnails').innerHTML = galleryThumbnails(photoVehicle, 0, 'data-explorer-photo');
   setPhoto(0);
 }
-function openPhotoExperience(id = vehicles[0].id) {
+function openPhotoExperience(id = vehicles[0].id, index = 0) {
   loadPhotoVehicle(id);
+  if (index) setPhoto(index);
   openDialog($('#photo-dialog'));
 }
-document.querySelectorAll('[data-photo-experience]').forEach((button) => button.addEventListener('click', () => openPhotoExperience()));
+const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+let viewerVehicle = vehicles.find((vehicle) => vehicle.id === 'highlander');
+let viewerIndex = 0;
+function renderViewer() {
+  $('#viewer-tabs').innerHTML = vehicles.map((vehicle) => `<button data-viewer-car="${vehicle.id}" aria-pressed="${vehicle.id === viewerVehicle.id}">${vehicle.year} ${vehicle.name.split(' ').slice(1).join(' ')}</button>`).join('');
+  $('#viewer-title').textContent = `${viewerVehicle.year} ${viewerVehicle.name}`;
+  $('#viewer-price').textContent = `${money(viewerVehicle.price)} cash price · ${viewerVehicle.miles} mi`;
+  $('#viewer-thumbs').innerHTML = galleryThumbnails(viewerVehicle, viewerIndex, 'data-viewer-photo');
+  setViewerPhoto(0);
+}
+function setViewerPhoto(index) {
+  viewerIndex = (index + viewerVehicle.images.length) % viewerVehicle.images.length;
+  const photo = viewerVehicle.images[viewerIndex];
+  $('#viewer-image').loading = 'eager';
+  $('#viewer-image').src = photo.src;
+  $('#viewer-image').alt = photo.alt;
+  $('#viewer-image').style.transform = '';
+  $('#viewer-counter').textContent = `${viewerIndex + 1} / ${viewerVehicle.images.length}`;
+  document.querySelectorAll('[data-viewer-photo]').forEach((button) => button.setAttribute('aria-pressed', String(Number(button.dataset.viewerPhoto) === viewerIndex)));
+}
+renderViewer();
+$('#viewer-tabs').addEventListener('click', (event) => {
+  const tab = event.target.closest('[data-viewer-car]');
+  if (!tab) return;
+  viewerVehicle = vehicles.find((vehicle) => vehicle.id === tab.dataset.viewerCar);
+  viewerIndex = 0;
+  renderViewer();
+  $('#viewer-tabs [aria-pressed="true"]').focus();
+});
+$('#viewer-thumbs').addEventListener('click', (event) => {
+  const thumbnail = event.target.closest('[data-viewer-photo]');
+  if (thumbnail) setViewerPhoto(Number(thumbnail.dataset.viewerPhoto));
+});
+$('#viewer-prev').addEventListener('click', () => setViewerPhoto(viewerIndex - 1));
+$('#viewer-next').addEventListener('click', () => setViewerPhoto(viewerIndex + 1));
+$('#viewer-stage').addEventListener('keydown', (event) => {
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); setViewerPhoto(viewerIndex + (event.key === 'ArrowRight' ? 1 : -1)); }
+});
+$('#viewer-details').addEventListener('click', () => showVehicle(viewerVehicle.id));
+document.querySelectorAll('[data-photo-experience]').forEach((button) => button.addEventListener('click', () => openPhotoExperience(viewerVehicle.id, viewerIndex)));
 $('#photo-vehicle').addEventListener('change', (event) => loadPhotoVehicle(event.target.value));
 $('#photo-thumbnails').addEventListener('click', (event) => {
   const button = event.target.closest('[data-explorer-photo]');
@@ -168,12 +213,13 @@ function attachPhotoDrag(stage, image, step) {
   stage.addEventListener('pointerdown', (event) => {
     if (event.target.closest('button') || event.button !== 0) return;
     movement = { x: event.clientX, y: event.clientY };
+    stage.classList.add('interacted');
     stage.setPointerCapture(event.pointerId);
   });
   stage.addEventListener('pointermove', (event) => {
     if (!movement) return;
     const distance = event.clientX - movement.x;
-    if (stage.id === 'photo-stage' && simulated && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (((stage.id === 'photo-stage' && simulated) || stage.id === 'viewer-stage') && !prefersReducedMotion.matches) {
       image().style.transform = `rotateY(${Math.max(-12, Math.min(12, distance / 4))}deg) rotateX(${Math.max(-4, Math.min(4, (movement.y - event.clientY) / 10))}deg) scale(1.015)`;
     }
     if (Math.abs(distance) >= 65) { step(distance < 0 ? 1 : -1); movement.x = event.clientX; }
@@ -183,15 +229,39 @@ function attachPhotoDrag(stage, image, step) {
   stage.addEventListener('pointercancel', end);
 }
 attachPhotoDrag($('#photo-stage'), () => $('#photo-main'), (direction) => setPhoto(photoIndex + direction));
+attachPhotoDrag($('#viewer-stage'), () => $('#viewer-image'), (direction) => setViewerPhoto(viewerIndex + direction));
+$('#viewer-stage').addEventListener('keydown', () => $('#viewer-stage').classList.add('interacted'));
 $('#photo-main').addEventListener('error', () => { $('#photo-position').textContent = 'This photo could not load. Choose another thumbnail or contact the dealership.'; });
 $('.menu-button').addEventListener('click', () => {
   const open = $('.header nav').classList.toggle('open');
   $('.menu-button').setAttribute('aria-expanded', String(open));
+  $('.menu-button').setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
 });
-document.querySelectorAll('.header nav a').forEach((link) => link.addEventListener('click', () => {
+function closeNavigation() {
   $('.header nav').classList.remove('open');
   $('.menu-button').setAttribute('aria-expanded', 'false');
-}));
+  $('.menu-button').setAttribute('aria-label', 'Open navigation');
+}
+document.querySelectorAll('.header nav a').forEach((link) => link.addEventListener('click', closeNavigation));
+document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeNavigation(); });
+const header = $('.header');
+document.documentElement.classList.add('has-js');
+const updateHeader = () => {
+  header.classList.toggle('scrolled', scrollY > 16);
+  document.body.classList.toggle('past-hero', scrollY > 360);
+};
+updateHeader();
+addEventListener('scroll', updateHeader, { passive: true });
+$('#load-map').addEventListener('click', () => {
+  const frame = document.createElement('iframe');
+  frame.title = 'Map showing Dahmani Automotive at 3275 Stevens Creek Blvd, Santa Clara';
+  frame.loading = 'lazy';
+  frame.referrerPolicy = 'no-referrer-when-downgrade';
+  frame.allowFullscreen = true;
+  frame.src = 'https://www.google.com/maps?q=Dahmani+Automotive+LLC%2C+3275+Stevens+Creek+Blvd+%23135%2C+Santa+Clara%2C+CA+95050&output=embed';
+  $('#map-frame').append(frame);
+  $('.map-facade').hidden = true;
+});
 let saleRequest = '';
 $('#sell-inputs').disabled = false;
 $('#sell-form').addEventListener('input', (event) => {

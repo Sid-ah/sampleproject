@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/staticwebapp.config.json",
+  "routes": [
+    { "route": "/assets/*", "headers": { "cache-control": "public, max-age=86400" } },
+    { "route": "/index.html", "headers": { "cache-control": "public, max-age=300, must-revalidate" } }
+  ],
+  "globalHeaders": {
+    "X-Robots-Tag": "noindex, follow",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+    "X-Frame-Options": "SAMEORIGIN"
+  },
+  "mimeTypes": {
+    ".webp": "image/webp",
+    ".woff2": "font/woff2"
+  }
+}
