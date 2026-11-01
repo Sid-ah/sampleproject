@@ -21,11 +21,8 @@ try {
   await mkdir('test-results', { recursive: true });
   browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
-  await context.addInitScript(() => addEventListener('DOMContentLoaded', () => {
-    const style = document.createElement('style');
-    style.textContent = 'html { scroll-behavior: auto !important; }';
-    document.head.append(style);
-  }));
+  // Smooth scrolling makes bounding boxes unstable; the third-party viewer rewrites the document, so inject after each load.
+  const calmScrolling = (target) => target.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
   const page = await context.newPage();
   const errors = [];
   page.on('pageerror', (error) => { errors.push(error.message); console.error('Browser exception:', error.message); });
@@ -39,6 +36,7 @@ try {
     await page.waitForLoadState('networkidle');
   }
   await page.waitForSelector('#brand-splash', { state: 'hidden', timeout: 5000 });
+  await calmScrolling(page);
   assert.equal(await page.evaluate(() => sessionStorage.getItem('dahmani-welcome')), '1', 'First visit splash completes and records this session');
   await page.screenshot({ path: 'test-results/initial.png', fullPage: true });
   await page.waitForFunction(() => document.querySelectorAll('.vehicle-card').length === 6);
@@ -117,8 +115,9 @@ try {
   assert.equal(await page.locator('#viewer-counter').textContent(), '8 / 8', 'Inline viewer wraps backwards');
   await page.locator('#viewer-thumbs button').nth(3).click();
   assert.equal(await page.locator('#viewer-counter').textContent(), '4 / 8');
-  await page.locator('#viewer-stage').evaluate((stage) => stage.scrollIntoView({ block: 'center' }));
+  await page.locator('#viewer-stage').evaluate((stage) => stage.scrollIntoView({ block: 'center', behavior: 'instant' }));
   const viewerStage = await page.locator('#viewer-stage').boundingBox();
+  assert.ok(await page.evaluate(([x, y]) => document.querySelector('#viewer-stage').contains(document.elementFromPoint(x, y)), [viewerStage.x + viewerStage.width / 2, viewerStage.y + viewerStage.height / 2]), 'Inline viewer is visible and unobstructed before dragging');
   await page.mouse.move(viewerStage.x + viewerStage.width / 2, viewerStage.y + viewerStage.height / 2);
   await page.mouse.down();
   await page.mouse.move(viewerStage.x + viewerStage.width / 2 - 170, viewerStage.y + viewerStage.height / 2, { steps: 12 });
@@ -144,6 +143,7 @@ try {
   await favorite.click();
   assert.equal(await favorite.getAttribute('aria-pressed'), 'true');
   await page.reload({ waitUntil: 'networkidle' });
+  await calmScrolling(page);
   assert.ok(await page.locator('#brand-splash').isHidden(), 'Return visits do not show the splash');
   assert.equal(await page.locator('[data-save=highlander]').getAttribute('aria-pressed'), 'true');
   await page.locator('[data-detail=elantra]').first().click();
@@ -229,6 +229,7 @@ try {
   assert.ok((await page.locator('#feedback-link').getAttribute('href')).includes('body='));
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(url, { waitUntil: 'networkidle', timeout: 90000 });
+  await calmScrolling(page);
   assert.ok(await page.locator('.mobile-bar').isHidden(), 'Mobile action bar stays out of the way on the first screen');
   assert.ok((await page.locator('.preview-bar').boundingBox()).height < 56, 'Preview notice is a single compact line on mobile');
   await page.evaluate(() => scrollTo(0, 900));
